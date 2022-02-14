@@ -22,23 +22,35 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
             $qry = $conn->query("SELECT * FROM `employee_data` where `status` = 1 order by id asc");
             while($row= $qry->fetch_assoc()):
         ?>
-        <option value="<?php echo $row['id'] ?>" <?php echo isset($fromdata_id) && $fromdata_id == $row['id'] ? 'selected' : '' ?> data-balance="<?php echo $row['balance'] ?>"><?php echo $row['employee_id']." ["($row['fullname'])."]" ?></option>
+        <option value="<?php echo $row['id'] ?>" <?php echo isset($fromdata_id) && $fromdata_id == $row['id'] ? 'selected' : '' ?> data-balance="<?php echo $row['balance'] ?>"><?php echo $row['employee_id']." [".($row['fullname'])."]" ?></option>
         <?php endwhile; ?>
         </select>
     </div>
     <?php else: ?>
         <div class="form-group">
-            <label for="category_id" class="control-label">Category</label>
-            <input type="hidden" name="category_id" value="<?php echo $category_id ?>">
+            <label for="fromdata_id" class="control-label">Category</label>
+            <input type="hidden" name="fromdata_id" value="<?php echo $fromdata_id ?>">
             <?php
-            $qry = $conn->query("SELECT * FROM `categories` where id = '{$category_id}'");
+            $qry = $conn->query("SELECT * FROM `employee_data` where id = '{$fromdata_id}'");
             $cat_res = $qry->fetch_assoc();
             $balance = $cat_res['balance'] + $amount;
             ?>
-            <p><b><?php echo $cat_res['category'] ?> [<?php echo number_format($balance) ?>]</b></p>
+            <p><b><?php echo $cat_res['employee_id'] ?> [<?php echo number_format($balance) ?>]</b></p>
             <input type="hidden" id="balance" value="<?php echo $balance ?>">
         </div>
     <?php endif; ?>
+    <div class="form-group">
+        <label for="numberofdayswork" class="control-label">Days Work</label>
+        <input name="numberofdayswork" id="numberofdayswork" class="form-control form text-right number" value="<?php echo isset($numberofdayswork) ? ($numberofdayswork) : 0; ?>">
+    </div>
+    <div class="form-group">
+        <label for="bonus" class="control-label">Bonus</label>
+        <input name="bonus" id="bonus" class="form-control form text-right number" value="<?php echo isset($bonus) ? ($bonus) : 0; ?>">
+    </div>
+    <div class="form-group">
+        <label for="overtimepay" class="control-label">Overtime Pay</label>
+        <input name="overtimepay" id="overtimepay" class="form-control form text-right number" value="<?php echo isset($overtimepay) ? ($overtimepay) : 0; ?>">
+    </div>
     <div class="form-group">
         <label for="amount" class="control-label">Amount</label>
         <input name="amount" id="amount" class="form-control form text-right number" value="<?php echo isset($amount) ? ($amount) : 0; ?>">
@@ -74,13 +86,13 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                 $(this).val(txt)
         })
         $('.number').trigger('change')
-		$('#expense-form').submit(function(e){
+		$('#payroll-form').submit(function(e){
 			e.preventDefault();
             var _this = $(this)
 			 $('.err-msg').remove();
              $("[name='amount']").removeClass("border-danger")
 			start_loader();
-            var cat_id = $("[name='category_id']").val();
+            var cat_id = $("[name='fromdata_id']").val();
             var cat_balance = $('#balance').length > 0 ? $('#balance').val() : $("[name='category_id'] option[value='"+cat_id+"']").attr('data-balance');
             var amount = $("[name='amount']").val();
                 amount = amount.replace(/,/g,"");

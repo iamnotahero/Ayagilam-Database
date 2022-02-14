@@ -19,7 +19,12 @@
 					<col width="15%">
 					<col width="20%">
 					<col width="15%">
-					<col width="30%">
+					<col width="12%">
+					<col width="7%">
+					<col width="10%">
+					<col width="10%">
+					<col width="15%">
+					<col width="15%">
 					<col width="15%">
 				</colgroup>
 				<thead>
@@ -58,12 +63,12 @@
 							<td><?php echo $row['fullname'] ?></td>
 							<td><?php echo $row['numberofdayswork'] ?></td>
 							<td><?php echo $row['bonus'] ?></td>
-							<td><?php echo $row['ovetimepay'] ?></td>
+							<td><?php echo $row['overtimepay'] ?></td>
 							<td><?php echo $row['grosssalary'] ?></td>
 							<td><?php echo $row['cashadvance'] ?></td>
 							<td><?php echo $row['latehours'] ?></td>
 							<td><?php echo $row['totaldeduction'] ?></td>
-							<td><?php echo $row['netpay'] ?></td>
+							<td><?php echo number_format($row['netpay']) ?></td>
 							<td ><p class="m-0 text-right"><?php echo number_format($row['amount']) ?></p></td>
 							<td ><p class="m-0 truncate"><?php echo ($row['remarks']) ?></p></td>
 							<td align="center">
