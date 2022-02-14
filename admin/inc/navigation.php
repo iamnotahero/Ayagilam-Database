@@ -44,6 +44,14 @@
                       </a>
                     </li>
                     <li class="nav-item dropdown">
+                      <a href="<?php echo base_url ?>admin/?page=payroll" class="nav-link nav-e nav-payroll">
+                        <i class="nav-icon fas fa-wallet"></i>
+                        <p>
+                          Payroll Management
+                        </p>
+                      </a>
+                    </li>
+                    <li class="nav-item dropdown">
                       <a href="<?php echo base_url ?>admin/?page=budget" class="nav-link nav-budget">
                         <i class="nav-icon fas fa-wallet"></i>
                         <p>

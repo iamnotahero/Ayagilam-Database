@@ -15,14 +15,14 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
     <input type="hidden" name ="balance_type" value="2">
     <?php if(!isset($id)): ?>
     <div class="form-group">
-        <label for="fromdata_id" class="control-label">Category</label>
+        <label for="fromdata_id" class="control-label">Employee ID And Name</label>
         <select name="fromdata_id" id="fromdata_id" class="custom-select select2" required>
         <option value=""></option>
         <?php
-            $qry = $conn->query("SELECT * FROM `categories` where `balance` > 0 order by category asc");
+            $qry = $conn->query("SELECT * FROM `employee_data` where `status` = 1 order by id asc");
             while($row= $qry->fetch_assoc()):
         ?>
-        <option value="<?php echo $row['id'] ?>" <?php echo isset($category_id) && $category_id == $row['id'] ? 'selected' : '' ?> data-balance="<?php echo $row['balance'] ?>"><?php echo $row['category']." [".number_format($row['balance'])."]" ?></option>
+        <option value="<?php echo $row['id'] ?>" <?php echo isset($fromdata_id) && $fromdata_id == $row['id'] ? 'selected' : '' ?> data-balance="<?php echo $row['balance'] ?>"><?php echo $row['employee_id']." ["($row['fullname'])."]" ?></option>
         <?php endwhile; ?>
         </select>
     </div>

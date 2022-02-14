@@ -26,7 +26,16 @@
 					<tr>
 						<th>#</th>
 						<th>Date Created</th>
-						<th>Category</th>
+						<th>Employee ID</th>
+						<th>Full Name</th>
+						<th>Days of Work</th>
+						<th>Bonus</th>
+						<th>Overtime Pay</th>
+						<th>Gross Salary</th>
+						<th>Cash Advance</th>
+						<th>Late Hours</th>
+						<th>Total Deduction</th>
+						<th>Net Pay</th>
 						<th>Amount</th>
 						<th>Remarks</th>
 						<th>Action</th>
@@ -35,7 +44,7 @@
 				<tbody>
 					<?php 
 					$i = 1;
-						$qry = $conn->query("SELECT r.*,c.category,c.balance from `running_balance` r inner join `categories` c on r.category_id = c.id where c.status= 1 and r.balance_type = 2 order by unix_timestamp(r.date_created) desc");
+						$qry = $conn->query("SELECT r.*,c.employee_id,c.fullname from `employee_payroll` r inner join `employee_data` c on r.fromdata_id = c.id where c.status= 1 and r.balance_type = 2 order by unix_timestamp(r.date_created) desc");
 						while($row = $qry->fetch_assoc()):
 							foreach($row as $k=> $v){
 								$row[$k] = trim(stripslashes($v));
@@ -45,7 +54,16 @@
 						<tr>
 							<td class="text-center"><?php echo $i++; ?></td>
 							<td><?php echo date("Y-m-d H:i",strtotime($row['date_created'])) ?></td>
-							<td><?php echo $row['category'] ?></td>
+							<td><?php echo $row['employee_id'] ?></td>
+							<td><?php echo $row['fullname'] ?></td>
+							<td><?php echo $row['numberofdayswork'] ?></td>
+							<td><?php echo $row['bonus'] ?></td>
+							<td><?php echo $row['ovetimepay'] ?></td>
+							<td><?php echo $row['grosssalary'] ?></td>
+							<td><?php echo $row['cashadvance'] ?></td>
+							<td><?php echo $row['latehours'] ?></td>
+							<td><?php echo $row['totaldeduction'] ?></td>
+							<td><?php echo $row['netpay'] ?></td>
 							<td ><p class="m-0 text-right"><?php echo number_format($row['amount']) ?></p></td>
 							<td ><p class="m-0 truncate"><?php echo ($row['remarks']) ?></p></td>
 							<td align="center">
