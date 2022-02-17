@@ -50,7 +50,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
    			</div>
 			<div class="form-group">
 				<label for="date_start" class="control-label">Date Start</label>
-				<input type="date" class="form-control form-control-sm" name="date_start" value="<?php echo isset($date_start) ? $date_start : date('Y-m-d', time());  ?>">
+				<input id="date_start" type="date" class="form-control form-control-sm" name="date_start" value="<?php echo isset($date_start) ? $date_start : date('Y-m-d', time());  ?>">
 				<script>
 				</script>
                 </select>

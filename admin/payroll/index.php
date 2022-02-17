@@ -5,9 +5,9 @@
 <?php endif;?>
 <div class="card card-outline card-primary">
 	<div class="card-header">
-		<h3 class="card-title">Expense Management</h3>
+		<h3 class="card-title">Payroll Management</h3>
 		<div class="card-tools">
-			<a href="javascript:void(0)" id="manage_expense" class="btn btn-flat btn-sm btn-primary"><span class="fas fa-plus"></span>  Add New</a>
+			<a href="javascript:void(0)" id="manage_payroll" class="btn btn-flat btn-sm btn-primary"><span class="fas fa-plus"></span>  Add New</a>
 		</div>
 	</div>
 	<div class="card-body">
@@ -77,9 +77,9 @@
 				                    <span class="sr-only">Toggle Dropdown</span>
 				                  </button>
 				                  <div class="dropdown-menu" role="menu">
-				                    <a class="dropdown-item manage_expense" href="javascript:void(0)" data-id="<?php echo $row['id'] ?>"><span class="fa fa-edit text-primary"></span> Edit</a>
+				                    <a class="dropdown-item manage_payroll" href="javascript:void(0)" data-id="<?php echo $row['id'] ?>"><span class="fa fa-edit text-primary"></span> Edit</a>
 				                    <div class="dropdown-divider"></div>
-				                    <a class="dropdown-item delete_data" href="javascript:void(0)" data-id="<?php echo $row['id'] ?>" data-category_id="<?php echo $row['category_id'] ?>"><span class="fa fa-trash text-danger"></span> Delete</a>
+				                    <a class="dropdown-item delete_data" href="javascript:void(0)" data-id="<?php echo $row['id'] ?>" data-payroll_id="<?php echo $row['fromdata_id'] ?>"><span class="fa fa-trash text-danger"></span> Delete</a>
 				                  </div>
 							</td>
 						</tr>
@@ -92,14 +92,14 @@
 </div>
 <script>
 	$(document).ready(function(){
-		$('#manage_expense').click(function(){
+		$('#manage_payroll').click(function(){
 			uni_modal("<i class='fa fa-plus'></i> Add New Expense",'payroll/manage_payroll.php')
 		})
-		$('.manage_expense').click(function(){
+		$('.manage_payroll').click(function(){
 			uni_modal("<i class='fa fa-edit'></i> Update Expense",'payroll/manage_payroll.php?id='+$(this).attr('data-id'))
 		})
 		$('.delete_data').click(function(){
-			_conf("Are you sure to delete this expense permanently?","delete_expense",[$(this).attr('data-id'),$(this).attr('data-category_id')])
+			_conf("Are you sure to delete this expense permanently?","delete_payroll",[$(this).attr('data-id'),$(this).attr('data-payroll_id')])
 		})
 		$('#uni_modal').on('show.bs.modal',function(){
 			$('.summernote').summernote({
@@ -119,12 +119,12 @@
 			order: [[0, 'asc']]
 		});
 	})
-	function delete_expense($id,$category_id){
+	function delete_expense($id,$fromdata_id){
 		start_loader();
 		$.ajax({
-			url:_base_url_+"classes/Master.php?f=delete_expense",
+			url:_base_url_+"classes/Master.php?f=delete_payroll",
 			method:"POST",
-			data:{id: $id,category_id: $category_id},
+			data:{id: $id,fromdata_id: $fromdata_id},
 			dataType:"json",
 			error:err=>{
 				console.log(err)

@@ -41,8 +41,8 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
     <?php endif; ?>
     <div class="form-group">
 				<label for="month_start" class="control-label">Date Start</label>
-				<input id="start" type="date" class="form-control form-control-sm" name="trainingdate" value="<?php echo isset($month_start) ? $month_start : date('Y-m-d', time());  ?>">
-				<script>
+				<input id="start" type="date" class="form-control form-control-sm date-start" name="month_start" value="<?php echo isset($month_start) ? $month_start : date('Y-m-d', time());  ?>">
+				<script>             
 				</script>
                 </select>
 	</div>
@@ -53,9 +53,13 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 				</script>
                 </select>
 	</div>
-    <script>
-            var start = document.getElementById("start").value
-            var end = document.getElementById("end").value
+    <div class="form-group">
+        <!-- WILL SOON REMOVE  input-id -->
+            <label for="numberofdayswork" class="control-label">Work Days: <span id = "span-day" name="span-day"></span></label>
+            <input id= "numberofdayswork" type="hidden" name="numberofdayswork" value="<?php echo isset($numberofdayswork) ? ($numberofdayswork) : ""; ?>"> 
+            <input type="hidden" id="balance" value="<?php echo $balance ?>">
+            <script>
+
             function treatAsUTC(date) {
                 var result = new Date(date);
                 result.setMinutes(result.getMinutes() - result.getTimezoneOffset());
@@ -65,17 +69,18 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                 var millisecondsPerDay = 24 * 60 * 60 * 1000;
                 return (treatAsUTC(endDate) - treatAsUTC(startDate)) / millisecondsPerDay;
             }
-            console.log(daysBetween(start,end));
             function setdays(){
-                document.getElementById("numberofdayswork").value = daysBetween(start,end);
+                var start = document.getElementById("start");
+                var end = document.getElementById("end");
+                document.getElementById("numberofdayswork").value = daysBetween(start.value,end.value);
+                document.getElementById("span-day").innerText = daysBetween(start.value,end.value);
+                
             }
-
+            setdays();
+			//start.onchange=setdays;     
+            //end.onchange=setdays;  
+  
             </script>
-    <div class="form-group">
-            <label for="numberofdayswork" class="control-label">Total Days</label>
-            <input id= "numberofdayswork" class="form-control form text-right number" name="numberofdayswork" value="<?php echo isset($numberofdayswork) ? ($numberofdayswork) : ""; ?>">
-            <input type="hidden" id="balance" value="<?php echo $balance ?>">
-
     </div>    
     <div class="form-group">
         <label for="bonus" class="control-label">Bonus</label>
@@ -98,6 +103,10 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 <script>
   
 	$(document).ready(function(){
+        $('.date-start').on('load input change',function(){
+            //setdays();
+        })
+        $('.date-start').trigger('change')
         $('.select2').select2({placeholder:"Please Select here",width:"relative"})
         $('.number').on('load input change',function(){
             var txt = $(this).val()
@@ -142,7 +151,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                 return false;
             }
 			$.ajax({
-				url:_base_url_+"classes/Master.php?f=save_expense",
+				url:_base_url_+"classes/Master.php?f=save_payroll_expenses",
 				data: new FormData($(this)[0]),
                 cache: false,
                 contentType: false,

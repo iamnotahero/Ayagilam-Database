@@ -238,6 +238,41 @@ Class Master extends DBConnection {
 		}
 		return json_encode($resp);
 	}
+	function save_payroll_expenses(){
+		extract($_POST);
+		$_POST['amount'] = str_replace(',','',$_POST['amount']);
+		$_POST['remarks'] = addslashes(htmlentities($_POST['remarks']));
+		$data = "";
+		foreach($_POST as $k =>$v){
+			if($k == 'id')
+				continue;
+			if(!empty($data)) $data .=",";
+			$data .= " `{$k}`='{$v}' ";
+		}
+		if(!empty($data)) $data .=",";
+			$data .= " `user_id`='{$this->settings->userdata('id')}' ";
+		if(empty($id)){
+			$sql = "INSERT INTO `running_balance` set $data";
+		}else{
+			$sql = "UPDATE `running_balance` set $data WHERE id ='{$id}'";
+		}
+		$save = $this->conn->query($sql);
+		if($save){
+			$update_balance =$this->update_balance($_POST['category_id']);
+			
+			if($update_balance == 1){
+				$resp['status'] ='success';
+				$this->settings->set_flashdata('success'," Expense successfully saved.");
+			}else{
+				$resp['status'] = 'failed';
+				$resp['error'] = $update_balance;
+			}
+		}else{
+			$resp['status'] = 'failed';
+			$resp['error'] = $this->conn;
+		}
+		return json_encode($resp);
+	}
 	function save_employee_expenses(){
 		extract($_POST);
 		$_POST['amount'] = str_replace(',','',$_POST['amount']);
@@ -320,6 +355,9 @@ switch ($action) {
 	break;
 	case 'save_expense':
 		echo $Master->save_expense();
+	break;
+	case 'save_payroll_expenses':
+		echo $Master->save_payroll_expenses();
 	break;
 	case 'delete_expense':
 		echo $Master->delete_expense();
