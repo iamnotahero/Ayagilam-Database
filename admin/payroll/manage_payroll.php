@@ -40,16 +40,43 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
         </div>
     <?php endif; ?>
     <div class="form-group">
-				<label for="trainingdate" class="control-label">Date Start</label>
-				<input type="date" class="form-control form-control-sm" name="trainingdate" value="<?php echo isset($trainingdate) ? $trainingdate : date('Y-m-d', time());  ?>">
+				<label for="month_start" class="control-label">Date Start</label>
+				<input id="start" type="date" class="form-control form-control-sm" name="trainingdate" value="<?php echo isset($month_start) ? $month_start : date('Y-m-d', time());  ?>">
 				<script>
 				</script>
                 </select>
 	</div>
     <div class="form-group">
-        <label for="numberofdayswork" class="control-label">Days Work</label>
-        <input name="numberofdayswork" id="numberofdayswork" class="form-control form text-right number" value="<?php echo isset($numberofdayswork) ? ($numberofdayswork) : 0; ?>">
-    </div>
+				<label for="month_end" class="control-label">Date End</label>
+				<input id="end" type="date" class="form-control form-control-sm" name="month_end" value="<?php echo isset($month_end) ? $month_end : date('Y-m-d', strtotime(' + 6 days'));  ?>">
+				<script>
+				</script>
+                </select>
+	</div>
+    <script>
+            var start = document.getElementById("start").value
+            var end = document.getElementById("end").value
+            function treatAsUTC(date) {
+                var result = new Date(date);
+                result.setMinutes(result.getMinutes() - result.getTimezoneOffset());
+                return result;
+            }
+            function daysBetween(startDate,endDate) {
+                var millisecondsPerDay = 24 * 60 * 60 * 1000;
+                return (treatAsUTC(endDate) - treatAsUTC(startDate)) / millisecondsPerDay;
+            }
+            console.log(daysBetween(start,end));
+            function setdays(){
+                document.getElementById("numberofdayswork").value = daysBetween(start,end);
+            }
+
+            </script>
+    <div class="form-group">
+            <label for="numberofdayswork" class="control-label">Total Days</label>
+            <input id= "numberofdayswork" class="form-control form text-right number" name="numberofdayswork" value="<?php echo isset($numberofdayswork) ? ($numberofdayswork) : ""; ?>">
+            <input type="hidden" id="balance" value="<?php echo $balance ?>">
+
+    </div>    
     <div class="form-group">
         <label for="bonus" class="control-label">Bonus</label>
         <input name="bonus" id="bonus" class="form-control form text-right number" value="<?php echo isset($bonus) ? ($bonus) : 0; ?>">
