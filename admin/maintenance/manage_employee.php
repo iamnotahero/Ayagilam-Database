@@ -19,7 +19,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 			<div class="form-group d-flex justify-content-center">
 				<!--PUT CONDITION IF WHILE NO PICTURE *FIXED* I THINK COMEBACK TO THIS LATER IF NOT--> 	
 				<?php if (!isset($avatar) or $avatar == "N/A"): ?>
-								<span><img src="/expense_budget/uploads/default.png" alt=" " id="cimg" class="img-fluid img-thumbnail"></span>
+								<span><img src="/AyagilamDatabase/uploads/default.png" alt=" " id="cimg" class="img-fluid img-thumbnail"></span>
 								<?php else: ?>	
 					<img src="<?php echo validate_image(isset($avatar) ? $avatar :'') ?>" alt="	" id="cimg" class="img-fluid img-thumbnail">
 					<?php endif; ?>	

@@ -28,7 +28,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
     </div>
     <?php else: ?>
         <div class="form-group">
-            <label for="fromdata_id" class="control-label">Category</label>
+            <label for="fromdata_id" class="control-label">Employee ID</label>
             <input type="hidden" name="fromdata_id" value="<?php echo $fromdata_id ?>">
             <?php
             $qry = $conn->query("SELECT * FROM `employee_data` where id = '{$fromdata_id}'");
@@ -39,6 +39,13 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
             <input type="hidden" id="balance" value="<?php echo $balance ?>">
         </div>
     <?php endif; ?>
+    <div class="form-group">
+				<label for="trainingdate" class="control-label">Date Start</label>
+				<input type="date" class="form-control form-control-sm" name="trainingdate" value="<?php echo isset($trainingdate) ? $trainingdate : date('Y-m-d', time());  ?>">
+				<script>
+				</script>
+                </select>
+	</div>
     <div class="form-group">
         <label for="numberofdayswork" class="control-label">Days Work</label>
         <input name="numberofdayswork" id="numberofdayswork" class="form-control form text-right number" value="<?php echo isset($numberofdayswork) ? ($numberofdayswork) : 0; ?>">
