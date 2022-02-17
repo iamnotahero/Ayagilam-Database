@@ -93,10 +93,10 @@
 <script>
 	$(document).ready(function(){
 		$('#manage_payroll').click(function(){
-			uni_modal("<i class='fa fa-plus'></i> Add New Expense",'payroll/manage_payroll.php')
+			uni_modal("<i class='fa fa-plus'></i> Add New Payroll Data",'payroll/manage_payroll.php')
 		})
 		$('.manage_payroll').click(function(){
-			uni_modal("<i class='fa fa-edit'></i> Update Expense",'payroll/manage_payroll.php?id='+$(this).attr('data-id'))
+			uni_modal("<i class='fa fa-edit'></i> Update Payroll Data",'payroll/manage_payroll.php?id='+$(this).attr('data-id'))
 		})
 		$('.delete_data').click(function(){
 			_conf("Are you sure to delete this expense permanently?","delete_payroll",[$(this).attr('data-id'),$(this).attr('data-payroll_id')])
@@ -112,6 +112,10 @@
 		        ]
 		    })
 		})
+		//The Fix for document.ready now working properly with modals
+		$('#uni_modal').on('hidden.bs.modal', function () {
+ location.reload();
+})
 		$('.table').dataTable({
 			columnDefs: [
 				{ orderable: false, targets: 5 }

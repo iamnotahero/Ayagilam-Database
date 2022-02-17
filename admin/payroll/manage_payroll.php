@@ -54,12 +54,10 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                 </select>
 	</div>
     <div class="form-group">
-        <!-- WILL SOON REMOVE  input-id -->
+        <!-- WILL SOON REMOVE  input-id transfer the php code to span-day later-->
             <label for="numberofdayswork" class="control-label">Work Days: <span id = "span-day" name="span-day"></span></label>
             <input id= "numberofdayswork" type="hidden" name="numberofdayswork" value="<?php echo isset($numberofdayswork) ? ($numberofdayswork) : ""; ?>"> 
-            <input type="hidden" id="balance" value="<?php echo $balance ?>">
             <script>
-
             function treatAsUTC(date) {
                 var result = new Date(date);
                 result.setMinutes(result.getMinutes() - result.getTimezoneOffset());
@@ -77,9 +75,8 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                 
             }
             setdays();
-			//start.onchange=setdays;     
-            //end.onchange=setdays;  
-  
+			document.getElementById("start").onchange=setdays;     
+            document.getElementById("end").onchange=setdays; 
             </script>
     </div>    
     <div class="form-group">
@@ -100,13 +97,9 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
     </div>
 </form>
 </div>
-<script>
-  
+<script> 
 	$(document).ready(function(){
-        $('.date-start').on('load input change',function(){
-            //setdays();
-        })
-        $('.date-start').trigger('change')
+        console.log("DOCUMENT LOADED");
         $('.select2').select2({placeholder:"Please Select here",width:"relative"})
         $('.number').on('load input change',function(){
             var txt = $(this).val()
