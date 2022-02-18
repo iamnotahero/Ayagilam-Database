@@ -58,6 +58,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
             <label for="numberofdayswork" class="control-label">Work Days: <span id = "span-day" name="span-day"></span></label>
             <input id= "numberofdayswork" type="hidden" name="numberofdayswork" value="<?php echo isset($numberofdayswork) ? ($numberofdayswork) : ""; ?>"> 
             <script>
+
             function treatAsUTC(date) {
                 var result = new Date(date);
                 result.setMinutes(result.getMinutes() - result.getTimezoneOffset());
@@ -72,13 +73,52 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                 var end = document.getElementById("end");
                 document.getElementById("numberofdayswork").value = daysBetween(start.value,end.value);
                 document.getElementById("span-day").innerText = daysBetween(start.value,end.value);
-                
+                var e = document.getElementById("company_list");
+			function additem(){
+						var strUser = e.options[e.selectedIndex].text;
+						if (strUser){ //add if chosen is duplicateed in the future
+						var div = document.getElementById("company_chosen");
+						var divc = document.createElement("div");
+						var span = document.createElement("span");
+						span.setAttribute('id',strUser);
+						span.setAttribute('onclick',"removeitem(this)");
+						span.setAttribute('class',"close delete-company");
+						span.appendChild (document.createTextNode("x"));
+						divc.setAttribute('id',e.options[e.selectedIndex].value);
+						divc.setAttribute('class',"callout callout-info");
+						divc.appendChild (document.createTextNode(strUser));
+						div.appendChild(divc);
+						divc.appendChild(span);
+					////// get elements in inside the div 
+						updatearraytodb()
+			}} 
+            function getDayName(dateStr, locale){
+                var date = new Date(dateStr);
+                return date.toLocaleDateString(locale, {day:'numeric',
+                                                        weekday: 'long' });        
             }
+            var divArray = [];
+            var work_days = new Date(start.value);
+            for (var i = 0; i < daysBetween(start.value,end.value); i += 1) { 
+                //Working iteration in console log need to add a offset at the end of date
+                        var idate = work_days.setDate(work_days.getDate() + 1);
+                        console.log(getDayName(work_days, "en-US"));
+						divArray.push(idate);
+					}
+                    console.log(divArray);
+            }
+ 
             setdays();
 			document.getElementById("start").onchange=setdays;     
             document.getElementById("end").onchange=setdays; 
             </script>
-    </div>    
+    </div>
+    <div class="form-group">
+        <label for="day_list" class="control-label">Days: </label>
+        <input name="day_list" id="bonus" class="form-control form text-right number" value="<?php echo isset($bonus) ? ($bonus) : 0; ?>">
+            <div class="form-group" id="day_list">
+		    </div>
+    </div>   
     <div class="form-group">
         <label for="bonus" class="control-label">Bonus</label>
         <input name="bonus" id="bonus" class="form-control form text-right number" value="<?php echo isset($bonus) ? ($bonus) : 0; ?>">

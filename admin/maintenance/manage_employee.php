@@ -70,6 +70,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 			<label for="company_chosen" class="control-label">Company Assignments</label>		
 			<div class="form-group" id="company_chosen">
 			</div>
+			</div<>
 			<div class="form-group">
 				<label for="company_list" class="control-label">Add Company</label>
 				<select name="company_list" selected="0" id="company_list" class="custom-select select2" required>
