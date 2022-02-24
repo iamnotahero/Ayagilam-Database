@@ -146,7 +146,6 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 					if (!empty($company_assign)):
 					$str_arr = explode(",",$company_assign);
 					foreach ($str_arr as &$tae): ?> 
-					console.log("CHOSEN: "+e.options[<?php echo json_encode($tae);?>].text);
 					showitem(e.options[<?php echo json_encode($tae);?>].value); 
 					<?php endforeach;
 					else: ?>
