@@ -157,7 +157,7 @@
                                 <?php endif; ?>
                             </td>
 							<td><?php  if($row['avatar'] == "N/A"): ?>
-								<span><img src="/expense_budget/uploads/default.png" class="img-circle elevation-2" alt="" id="cimg"></span>
+								<span><img src="/AyagilamDatabase/uploads/default.png" class="img-circle elevation-2" alt="" id="cimg"></span>
 								<?php else: ?>
 								<span><img src="<?php echo validate_image($row['avatar']) ?>" class="img-circle elevation-2" alt="User Image" id="cimg"></span>
 								<?php endif; ?>

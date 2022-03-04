@@ -252,17 +252,17 @@ Class Master extends DBConnection {
 		if(!empty($data)) $data .=",";
 			$data .= " `user_id`='{$this->settings->userdata('id')}' ";
 		if(empty($id)){
-			$sql = "INSERT INTO `running_balance` set $data";
+			$sql = "INSERT INTO `employee_payroll` set $data";
 		}else{
-			$sql = "UPDATE `running_balance` set $data WHERE id ='{$id}'";
+			$sql = "UPDATE `employee_payroll` set $data WHERE id ='{$id}'";
 		}
 		$save = $this->conn->query($sql);
 		if($save){
-			$update_balance =$this->update_balance($_POST['category_id']);
+			$update_balance =$this->update_balance($_POST['fromdata_id']);
 			
 			if($update_balance == 1){
 				$resp['status'] ='success';
-				$this->settings->set_flashdata('success'," Expense successfully saved.");
+				$this->settings->set_flashdata('success'," Payroll successfully saved.");
 			}else{
 				$resp['status'] = 'failed';
 				$resp['error'] = $update_balance;
