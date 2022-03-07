@@ -7,6 +7,8 @@
     font-size: smaller;
     font-style: italic;
 }
+
+/* SOMETHIN SOMETHING */
 .hides {
     display: none !important;
   }
@@ -157,4 +159,9 @@ label.star:hover {
 label.star:before {
     content: '\2605';
     font-family: FontAwesome
+}
+
+.temp-blur-img{
+    filter: blur(100px);
+    -webkit-filter: blur(100px);
 }

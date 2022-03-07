@@ -13,11 +13,11 @@
 	<div class="card-body">
 		<div class="container-fluid">
         <div class="container-fluid">
-			<table class="table table-bordered table-stripped">
+			<table class="table small table-bordered table-stripped">
 				<colgroup>
+					<col width="1%">
 					<col width="5%">
-					<col width="15%">
-					<col width="20%">
+					<col width="7%">
 					<col width="15%">
 					<col width="12%">
 					<col width="7%">
@@ -41,6 +41,8 @@
 						<th>Late Hours</th>
 						<th>Total Deduction</th>
 						<th>Net Pay</th>
+						<th>Date Start</th>
+						<th>Date End</th>
 						<th>Amount</th>
 						<th>Remarks</th>
 						<th>Action</th>
@@ -69,6 +71,8 @@
 							<td><?php echo $row['latehours'] ?></td>
 							<td><?php echo $row['totaldeduction'] ?></td>
 							<td><?php echo number_format($row['netpay']) ?></td>
+							<td><?php echo $row['month_start'] ?></td>
+							<td><?php echo $row['month_end'] ?></td>
 							<td ><p class="m-0 text-right"><?php echo number_format($row['amount']) ?></p></td>
 							<td ><p class="m-0 truncate"><?php echo ($row['remarks']) ?></p></td>
 							<td align="center">
@@ -99,7 +103,7 @@
 			uni_modal("<i class='fa fa-edit'></i> Update Payroll Data",'payroll/manage_payroll.php?id='+$(this).attr('data-id'))
 		})
 		$('.delete_data').click(function(){
-			_conf("Are you sure to delete this expense permanently?","delete_payroll",[$(this).attr('data-id'),$(this).attr('data-payroll_id')])
+			_conf("Are you sure to delete this payroll permanently?","delete_payroll_expenses",[$(this).attr('data-id'),$(this).attr('data-payroll_id')])
 		})
 		$('#uni_modal').on('show.bs.modal',function(){
 			$('.summernote').summernote({
@@ -114,8 +118,9 @@
 		})
 		//The Fix for document.ready now working properly with modals
 		$('#uni_modal').on('hidden.bs.modal', function () {
- location.reload();
-})
+			sessionStorage.clear();
+ 			location.reload();
+		})
 		$('.table').dataTable({
 			columnDefs: [
 				{ orderable: false, targets: 5 }
@@ -123,10 +128,10 @@
 			order: [[0, 'asc']]
 		});
 	})
-	function delete_expense($id,$fromdata_id){
+	function delete_payroll_expenses($id,$fromdata_id){
 		start_loader();
 		$.ajax({
-			url:_base_url_+"classes/Master.php?f=delete_payroll",
+			url:_base_url_+"classes/Master.php?f=delete_payroll_expenses",
 			method:"POST",
 			data:{id: $id,fromdata_id: $fromdata_id},
 			dataType:"json",

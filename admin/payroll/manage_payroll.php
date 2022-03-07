@@ -11,7 +11,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 ?>
 <div class="container-fluid">
 <form action="" id="payroll-form">
-    <input type="hidden" name ="id" value="<?php echo isset($id) ? $id : '' ?>">
+    <input type="hidden" id="test1" name ="id" value="<?php echo isset($id) ? $id : '' ?>">
     <input type="hidden" name ="balance_type" value="2">
     <?php if(!isset($id)): ?>
     <div class="form-group">
@@ -41,14 +41,14 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
     <?php endif; ?>
     <div class="form-group">
 				<label for="month_start" class="control-label">Date Start</label>
-				<input id="start" type="date" class="form-control form-control-sm date-start" name="month_start" value="<?php echo isset($month_start) ? $month_start : date('Y-m-d', time());  ?>">
+				<input id="start" type="date" class="form-control form-control-sm date-start" name="month_start" value="<?php echo isset($month_start) ? $month_start : date('Y-m-d', strtotime(' - 6 days'));  ?>">
 				<script>             
 				</script>
                 </select>
 	</div>
     <div class="form-group">
 				<label for="month_end" class="control-label">Date End</label>
-				<input id="end" type="date" class="form-control form-control-sm" name="month_end" value="<?php echo isset($month_end) ? $month_end : date('Y-m-d', strtotime(' + 6 days'));  ?>">
+				<input id="end" type="date" class="form-control form-control-sm" name="month_end" value="<?php echo isset($month_end) ? $month_end : date('Y-m-d', time());  ?>">
 				<script>
 				</script>
                 </select>
@@ -58,7 +58,6 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
             <label for="numberofdayswork" class="control-label">Total Days: <span id = "span-totalday" name="span-totalday"></span></label>
             <label for="numberofdayswork" class="control-label">Found Weekends: <span id = "span-weekend" name="span-weekend"></span></label>
             <label for="numberofdayswork" class="control-label">Total Work Days: <span id = "span-day" name="span-day"><?php echo isset($numberofdayswork) ? ($numberofdayswork) : ""; ?></span></label>
-            <input id= "salaryoftheday" type="hidden" name="salaryoftheday" value="<?php echo isset($salaryoftheday) ? ($salaryoftheday) : "0"; ?>"> 
             <script>
             </script>
     </div>
@@ -112,7 +111,9 @@ function deletealldivs(){
 }
 function savedatatolocalstorage(){
     var x = document.getElementById('day_list');
+    var id = document.getElementById('test1');
         var y = x.getElementsByTagName('input');
+        myStorage.setItem('id',id.value);
         for (var i = 0; i < y.length; i += 1) {
             var date = y[i].id;
             var salary = y[i].value;
@@ -125,33 +126,34 @@ function savedatatolocalstorage(){
                 }
         }
 }
+var salaries = '';
 function StoreDaySalaryToArray(){
     var x = document.getElementById('day_list');
         var y = x.getElementsByTagName('input');
-        var divArray = [];
+        let divObject = {};
         for (var i = 0; i < y.length; i += 1) {
-            var removestring = y[i].value.replaceAll(',','');
-            divArray.push(removestring);
+            let removestring = y[i].value.replaceAll(',','');
+            let cur_date = y[i].id;
+            console.log(cur_date);
+            divObject[cur_date] = removestring;
         }
-        var salaries = divArray.toString();	
-        document.getElementById("salaryoftheday").value = salaries;
+        salaries = JSON.stringify(divObject)
+        //document.getElementById("salaryoftheday").value = salaries;
         //console.log(company)
-        //console.log(divArray)
 }
-function additem(strUser,date,amount,isholiday){
+function additem(strUser,date,amount){
             if (strUser){ //add if chosen is duplicateed in the future
-            var div = document.getElementById("day_list");
-            var divc = document.createElement("div");
-            var input = document.createElement("input");
-            input.setAttribute('name',strUser);
-            input.setAttribute('id',date);
-            input.setAttribute('class',"form-control form text-right number");
-            input.setAttribute('value',amount);
-            divc.setAttribute('id',strUser+" "+isholiday);
-            divc.setAttribute('class',"callout callout-info");
-            divc.appendChild (document.createTextNode(strUser));
-            div.appendChild(divc);
-            divc.appendChild(input);
+                var convertdate = new Date(date);
+                var div = document.getElementById("day_list");
+                var divc = document.createElement("div");
+                var input = document.createElement("input");
+                input.setAttribute('id',date);
+                input.setAttribute('class',"form-control form text-right number");
+                input.setAttribute('value',amount);
+                divc.setAttribute('class',"callout callout-info");
+                divc.appendChild (document.createTextNode(strUser));
+                div.appendChild(divc);
+                divc.appendChild(input);
             }
 } 
 
@@ -167,40 +169,57 @@ function getFullDate(dateStr, locale){
                                             month: 'numeric',
                                             year: 'numeric' });        
 }
-
 function loadfromdatabase(){
+    var id = document.getElementById('test1');
+    if (myStorage.getItem('id') != id.value){
+        //console.log("TRIGGERED DELETE")
+        myStorage.clear();
+    }
     var start = document.getElementById("start");
     var end = document.getElementById("end");
-    var salary = document.getElementById("salaryoftheday").value;
+    var salary = <?php echo isset($salaryoftheday) ? (json_encode($salaryoftheday)) : 0; ?>;
     let weekends = 0;
-    const myArray = salary.split(",");
-    console.log("mYarray = "+myArray);
-var work_days = new Date(start.value);
-for (var i = 0; i < daysBetween(start.value,end.value)+1; i += 1) { 
-    //Working iteration in console log need to add a offset at the end of date
-    if (work_days.getDay() == 6 || work_days.getDay() == 0){
-        //console.log(getFullDate(work_days, "en-US")+" is a Weekend");
-        weekends +=1;
-    }
-             additem(getDayName(work_days, "en-US"),getFullDate(work_days, "en-US"),myArray[i]);
-            work_days.setDate(work_days.getDate() + 1);
-            //console.log(getDayName(work_days, "en-US"));        
+    //console.log(salary);    
+    const jsonParse = JSON.parse(salary);
+    //console.log(jsonParse);
+    // myArray = salary.split(",");
+    //console.log("mYarray = "+myArray);
+    var work_days = new Date(start.value);
+
+    for (var i = 0; i < daysBetween(start.value,end.value)+1; i += 1) { 
+        //Working iteration in console log need to add a offset at the end of date
+        if (work_days.getDay() == 6 || work_days.getDay() == 0){
+            //console.log(getFullDate(work_days, "en-US")+" is a Weekend");
+            weekends +=1;
         }
-        document.getElementById("span-totalday").innerText = daysBetween(start.value,end.value)+1;
-        document.getElementById("span-weekend").innerText = weekends;
-        document.getElementById("span-day").innerText = (daysBetween(start.value,end.value)+1)-weekends;
-        savedatatolocalstorage();
+        if (jsonParse[getFullDate(work_days, "en-US")]){
+                console.log("FOUND ITEM"+" " +jsonParse[getFullDate(work_days, "en-US")] );
+            //var salary = myStorage.getItem(getFullDate(work_days, "en-US"));
+            additem(getDayName(work_days, "en-US"),getFullDate(work_days, "en-US"),jsonParse[getFullDate(work_days, "en-US")]);
+            }else{
+                console.log("NOT FOUND ITEM");
+            additem(getDayName(work_days, "en-US"),getFullDate(work_days, "en-US"),0);
+            }
+            
+            work_days.setDate(work_days.getDate() + 1);
+
+    }
+    document.getElementById("span-totalday").innerText = daysBetween(start.value,end.value)+1;
+    document.getElementById("span-weekend").innerText = weekends;
+    document.getElementById("span-day").innerText = (daysBetween(start.value,end.value)+1)-weekends;
+    savedatatolocalstorage();
 }
+
 function loadfromlocalstorage(){
     savedatatolocalstorage();
     deletealldivs();
     var start = document.getElementById("start");
     var end = document.getElementById("end");
-    var salary = document.getElementById("salaryoftheday").value;
+    var salary = <?php echo isset($salaryoftheday) ? (json_encode($salaryoftheday)) : 0; ?>;
     let weekends = 0;
-    const myArray = salary.split(",");
     //console.log("mYarray = "+myArray);
 var work_days = new Date(start.value);
+//add compare date remove negative date.
 for (var i = 0; i < daysBetween(start.value,end.value)+1; i += 1) { 
     //Working iteration in console log need to add a offset at the end of date
     if (work_days.getDay() == 6 || work_days.getDay() == 0){
@@ -209,14 +228,12 @@ for (var i = 0; i < daysBetween(start.value,end.value)+1; i += 1) {
     }       
             //console.log(getDayName(work_days, "en-US"));
             if (myStorage.getItem(getFullDate(work_days, "en-US"))){
-                console.log("FOUND ITEM");
-            var salary = myStorage.getItem(getFullDate(work_days, "en-US"));
+                console.log("FOUND ITEM"+ myStorage.getItem(getFullDate(work_days, "en-US")));
+            additem(getDayName(work_days, "en-US"),getFullDate(work_days, "en-US"),myStorage.getItem(getFullDate(work_days, "en-US")));
             }else{
                 console.log("NOT FOUND ITEM");
-            var salary = 0;
+            additem(getDayName(work_days, "en-US"),getFullDate(work_days, "en-US"),0);
             }
-            console.log("This is the salaray"+salary);
-            additem(getDayName(work_days, "en-US"),getFullDate(work_days, "en-US"),salary);
             work_days.setDate(work_days.getDate() + 1);
 
         }
@@ -244,17 +261,11 @@ var txt = $(this).val()
     $(this).val(txt)
 })
 }
-<?php if (!empty($salaryoftheday)): ?>                   
+<?php if (!empty($salaryoftheday)): ?>              
             loadfromdatabase();
             <?php else: ?>
 			loadfromlocalstorage();
 			<?php endif?>
-            var divs = document.getElementById("salaryoftheday").value;
-            if (divs === "") {
-            console.log("string is empty");
-            }else{
-            console.log("string is not empty");
-            }
 			document.getElementById("start").onchange=loadfromlocalstorage;     
             document.getElementById("end").onchange=loadfromlocalstorage; 
             //make a php function that will iterate the stored array on the database with the date on the additem
@@ -286,7 +297,6 @@ var txt = $(this).val()
 		$('#payroll-form').submit(function(e){
             StoreDaySalaryToArray();
             loadfromlocalstorage();
-            deletealldivs();
 			e.preventDefault();
             var _this = $(this)
 			 $('.err-msg').remove();
@@ -307,9 +317,11 @@ var txt = $(this).val()
                 end_loader();
                 return false;
             }
+            var data = new FormData($(this)[0]);
+            data.append('salaryoftheday', salaries);
 			$.ajax({
 				url:_base_url_+"classes/Master.php?f=save_payroll_expenses",
-				data: new FormData($(this)[0]),
+				data: data,
                 cache: false,
                 contentType: false,
                 processData: false,
@@ -317,12 +329,14 @@ var txt = $(this).val()
                 type: 'POST',
                 dataType: 'json',
 				error:err=>{
+                    loadfromlocalstorage();
 					console.log(err)
 					alert_toast("An error occured",'error');
 					end_loader();
 				},
 				success:function(resp){
 					if(typeof resp =='object' && resp.status == 'success'){
+                        myStorage.clear()
 						location.reload()
 					}else if(resp.status == 'failed' && !!resp.msg){
                         var el = $('<div>')
@@ -331,6 +345,14 @@ var txt = $(this).val()
                             el.show('slow')
                             $("html, body").animate({ scrollTop: _this.closest('.card').offset().top }, "fast");
                             end_loader()
+                    }else if(resp.status == 'empty-failure' && !!resp.msg){
+    					alert_toast(resp.msg,'error');
+						end_loader();
+                        console.log(resp)
+                    }else if(resp.status == 'overlap' && !!resp.msg){
+    					alert_toast(resp.msg,'error');
+						end_loader();
+                        console.log(resp)
                     }else{
 						alert_toast("An error occured",'error');
 						end_loader();
@@ -338,6 +360,7 @@ var txt = $(this).val()
 					}
 				}
 			})
+            
 		})
 
 	})

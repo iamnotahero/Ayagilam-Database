@@ -19,14 +19,14 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 			<div class="form-group d-flex justify-content-center">
 				<!--PUT CONDITION IF WHILE NO PICTURE *FIXED* I THINK COMEBACK TO THIS LATER IF NOT--> 	
 				<?php if (!isset($avatar) or $avatar == "N/A"): ?>
-								<span><img src="/AyagilamDatabase/uploads/default.png" alt=" " id="cimg" class="img-fluid img-thumbnail"></span>
+								<span><img src="/AyagilamDatabase/uploads/default.png" alt=" " id="cimg" class="img-fluid img-thumbnail temp-blur-img"></span>
 								<?php else: ?>	
-					<img src="<?php echo validate_image(isset($avatar) ? $avatar :'') ?>" alt="	" id="cimg" class="img-fluid img-thumbnail">
+					<img src="<?php echo validate_image(isset($avatar) ? $avatar :'') ?>" alt="	" id="cimg" class="img-fluid img-thumbnail temp-blur-img">
 					<?php endif; ?>	
 				</div>
 			<div class="form-group">
 				<div class="custom-file">
-		            <input type="file" class="custom-file-input rounded-circle" id="customFile" name="img" onchange="displayImg(this,$(this))">
+		            <input type="file" class="custom-file-input rounded-circle" id="customFile" name="img" accept=".png, .jpg" onchange="displayImg(this,$(this))">
 		            <label class="custom-file-label" for="customFile">Choose Employee Picture</label>
 		        </div>
 			</div>
@@ -220,6 +220,8 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 </div>
 <style>
 	img#cimg{
+		filter: blur(8px);
+    	-webkit-filter: blur(8px);
 		height: 15vh;
 		width: 15vh;
 		object-fit: cover;
@@ -268,6 +270,14 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                             el.show('slow')
                             $("html, body").animate({ scrollTop: _this.closest('.card').offset().top }, "fast");
                             end_loader()
+					}else if(resp.status == 'wrong-extension' && !!resp.msg){
+						alert_toast(resp.msg,'error');
+						end_loader();
+                        console.log(resp)
+                    }else if(resp.status == 'size-limit' && !!resp.msg){
+						alert_toast(resp.msg,'error');
+						end_loader();
+                        console.log(resp)
                     }else{
 						alert_toast("An error occured",'error');
 						end_loader();

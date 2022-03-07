@@ -26,7 +26,6 @@
 	<div class="card-body">
 		<div class="container-fluid">
         <div class="container-fluid">
-		<div class="hides">I am shown when someone hovers over the div above.</div>
 			<table class="table small table-bordered table-stripped">
 				<colgroup>
 					<col width="1%">
@@ -77,7 +76,7 @@
 							<td class="text-center"><?php echo $i++; ?></td>
 							<td><?php echo date("Y-m-d H:i",strtotime($row['date_created'])) ?></td>
 							<td><?php echo $row['employee_id'] ?></td>
-							<td><?php echo $row['fullname'] ?></td>
+							<td>tamad ako mag video edit</td>
 							<td class="text-center">
                                 <?php if($row['position'] == 0): ?>
                                     <span>Truck Driver</span>
@@ -157,9 +156,9 @@
                                 <?php endif; ?>
                             </td>
 							<td><?php  if($row['avatar'] == "N/A"): ?>
-								<span><img src="/AyagilamDatabase/uploads/default.png" class="img-circle elevation-2" alt="" id="cimg"></span>
+								<span><img src="/AyagilamDatabase/uploads/default.png" class="img-circle elevation-2 temp-blur-img" alt="" id="cimg"></span>
 								<?php else: ?>
-								<span><img src="<?php echo validate_image($row['avatar']) ?>" class="img-circle elevation-2" alt="User Image" id="cimg"></span>
+								<span><img src="<?php echo validate_image($row['avatar']) ?>" class="img-circle elevation-2 temp-blur-img" alt="User Image" id="cimg"></span>
 								<?php endif; ?>
 							</td>
 							<td align="center">
@@ -183,10 +182,13 @@
 </div>
 <style>
 	img#cimg{
+		filter: blur(8px);
+    	-webkit-filter: blur(8px);
 		height: 10vh;
 		width: 10vh;
 		object-fit: cover;
 		border-radius: 100% 100%;
+		
 	}
 </style>
 <script>
