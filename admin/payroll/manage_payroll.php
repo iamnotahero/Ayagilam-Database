@@ -22,7 +22,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
             $qry = $conn->query("SELECT * FROM `employee_data` where `status` = 1 order by id asc");
             while($row= $qry->fetch_assoc()):
         ?>
-        <option value="<?php echo $row['id'] ?>" <?php echo isset($fromdata_id) && $fromdata_id == $row['id'] ? 'selected' : '' ?> data-balance="<?php echo $row['balance'] ?>"><?php echo $row['employee_id']." [".($row['fullname'])."]" ?></option>
+        <option value="<?php echo $row['id'] ?>" <?php echo isset($fromdata_id) && $fromdata_id == $row['id'] ? 'selected' : '' ?> data-balance="<?php echo $row['total_income'] ?>"><?php echo $row['employee_id']." [".($row['fullname'])."]" ?></option>
         <?php endwhile; ?>
         </select>
     </div>
@@ -33,7 +33,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
             <?php
             $qry = $conn->query("SELECT * FROM `employee_data` where id = '{$fromdata_id}'");
             $cat_res = $qry->fetch_assoc();
-            $balance = $cat_res['balance'] + $amount;
+            $balance = $cat_res['total_income']
             ?>
             <p><b><?php echo $cat_res['employee_id'] ?> [<?php echo number_format($balance) ?>]</b></p>
             <input type="hidden" id="balance" value="<?php echo $balance ?>">
@@ -55,9 +55,9 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 	</div>
     <div class="form-group">
         <!-- WILL SOON REMOVE  input-id transfer the php code to span-day later-->
-            <label for="numberofdayswork" class="control-label">Total Days: <span id = "span-totalday" name="span-totalday"></span></label>
-            <label for="numberofdayswork" class="control-label">Found Weekends: <span id = "span-weekend" name="span-weekend"></span></label>
-            <label for="numberofdayswork" class="control-label">Total Work Days: <span id = "span-day" name="span-day"><?php echo isset($numberofdayswork) ? ($numberofdayswork) : ""; ?></span></label>
+            <label for="" class="control-label">Total Days: <span id = "span-totalday" name="span-totalday"></span></label>
+            <label for="" class="control-label">Found Weekends: <span id = "span-weekend" name="span-weekend"></span></label>
+            <label for="numberofdayswork" class="control-label">Total Work Days: <span id = "numberofdayswork" name="numberofdayswork">0</span></label>
             <script>
             </script>
     </div>
@@ -94,6 +94,8 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 </div>
 <script> 
 myStorage = window.sessionStorage;
+var salaries;
+var total_work;
 function treatAsUTC(date) {
     var result = new Date(date);
     result.setMinutes(result.getMinutes() - result.getTimezoneOffset());
@@ -126,7 +128,6 @@ function savedatatolocalstorage(){
                 }
         }
 }
-var salaries = '';
 function StoreDaySalaryToArray(){
     var x = document.getElementById('day_list');
         var y = x.getElementsByTagName('input');
@@ -141,9 +142,43 @@ function StoreDaySalaryToArray(){
         //document.getElementById("salaryoftheday").value = salaries;
         //console.log(company)
 }
-function additem(strUser,date,amount){
-            if (strUser){ //add if chosen is duplicateed in the future
-                var convertdate = new Date(date);
+function CalculateAllDivs(){
+    var x = document.getElementById('day_list');
+    var amount_all = document.getElementById('amount');
+        var y = x.getElementsByTagName('input');
+        let storeval = 0;
+        for (var i = 0; i < y.length; i += 1) {
+            if (y[i].value == 0){
+                var removestring = 0;
+            }else{
+            removestring = y[i].value.replaceAll(',','');
+            }
+            var value = parseFloat(removestring);
+            storeval += value;
+
+            //console.log("THE VAL", storeval);  
+            //divObject[cur_date] = removestring;
+        }
+        amount_all.value = storeval.toLocaleString('en-US');
+        //salaries = JSON.stringify(divObject)
+        //document.getElementById("salaryoftheday").value = salaries;
+        //console.log(company)
+}
+function GetTotalWorkDays(){
+    var x = document.getElementById('day_list');
+    var total_work_span = document.getElementById('numberofdayswork');
+        var y = x.getElementsByTagName('input');
+        let storeval = 0;
+        for (var i = 0; i < y.length; i += 1) {
+            if (parseFloat(y[i].value.replaceAll(',','')) > 0){
+                storeval += 1;
+            }
+        }
+        total_work = parseFloat(storeval);
+        total_work_span.innerText = parseFloat(storeval);
+}
+function additem(tab_name,date,amount){
+            if (tab_name){ //add if chosen is duplicateed in the future
                 var div = document.getElementById("day_list");
                 var divc = document.createElement("div");
                 var input = document.createElement("input");
@@ -151,7 +186,7 @@ function additem(strUser,date,amount){
                 input.setAttribute('class',"form-control form text-right number");
                 input.setAttribute('value',amount);
                 divc.setAttribute('class',"callout callout-info");
-                divc.appendChild (document.createTextNode(strUser));
+                divc.appendChild (document.createTextNode(tab_name));
                 div.appendChild(divc);
                 divc.appendChild(input);
             }
@@ -159,7 +194,8 @@ function additem(strUser,date,amount){
 
 function getDayName(dateStr, locale){
     var date = new Date(dateStr);
-    return date.toLocaleDateString(locale, {day:'numeric',
+    return date.toLocaleDateString(locale, {month: 'long',
+                                            day:'numeric',
                                             weekday: 'long' });        
 }
 
@@ -193,11 +229,11 @@ function loadfromdatabase(){
             weekends +=1;
         }
         if (jsonParse[getFullDate(work_days, "en-US")]){
-                console.log("FOUND ITEM"+" " +jsonParse[getFullDate(work_days, "en-US")] );
+                //console.log("FOUND ITEM"+" " +jsonParse[getFullDate(work_days, "en-US")] );
             //var salary = myStorage.getItem(getFullDate(work_days, "en-US"));
             additem(getDayName(work_days, "en-US"),getFullDate(work_days, "en-US"),jsonParse[getFullDate(work_days, "en-US")]);
             }else{
-                console.log("NOT FOUND ITEM");
+                //console.log("NOT FOUND ITEM");
             additem(getDayName(work_days, "en-US"),getFullDate(work_days, "en-US"),0);
             }
             
@@ -206,7 +242,7 @@ function loadfromdatabase(){
     }
     document.getElementById("span-totalday").innerText = daysBetween(start.value,end.value)+1;
     document.getElementById("span-weekend").innerText = weekends;
-    document.getElementById("span-day").innerText = (daysBetween(start.value,end.value)+1)-weekends;
+    GetTotalWorkDays();
     savedatatolocalstorage();
 }
 
@@ -215,7 +251,6 @@ function loadfromlocalstorage(){
     deletealldivs();
     var start = document.getElementById("start");
     var end = document.getElementById("end");
-    var salary = <?php echo isset($salaryoftheday) ? (json_encode($salaryoftheday)) : 0; ?>;
     let weekends = 0;
     //console.log("mYarray = "+myArray);
 var work_days = new Date(start.value);
@@ -228,10 +263,10 @@ for (var i = 0; i < daysBetween(start.value,end.value)+1; i += 1) {
     }       
             //console.log(getDayName(work_days, "en-US"));
             if (myStorage.getItem(getFullDate(work_days, "en-US"))){
-                console.log("FOUND ITEM"+ myStorage.getItem(getFullDate(work_days, "en-US")));
+                //console.log("FOUND ITEM"+ myStorage.getItem(getFullDate(work_days, "en-US")));
             additem(getDayName(work_days, "en-US"),getFullDate(work_days, "en-US"),myStorage.getItem(getFullDate(work_days, "en-US")));
             }else{
-                console.log("NOT FOUND ITEM");
+                //console.log("NOT FOUND ITEM");
             additem(getDayName(work_days, "en-US"),getFullDate(work_days, "en-US"),0);
             }
             work_days.setDate(work_days.getDate() + 1);
@@ -239,27 +274,30 @@ for (var i = 0; i < daysBetween(start.value,end.value)+1; i += 1) {
         }
         document.getElementById("span-totalday").innerText = daysBetween(start.value,end.value)+1;
         document.getElementById("span-weekend").innerText = weekends;
-        document.getElementById("span-day").innerText = (daysBetween(start.value,end.value)+1)-weekends;
+        CalculateAllDivs();
+        GetTotalWorkDays();
         $('.number').on('load input change',function(){
-var txt = $(this).val()
-    var p = (txt.match(/[.]/g) || []).length;
-        console.log(p)
-    if(txt.slice(-1) == '.' && p > 1){
-        $(this).val(txt.slice(0,-1))
-        return false;
-    }
-    if(txt.slice(-1) == '.'){
-        txt = txt
-    }else{
-        txt = txt.split('.')
-        ntxt = ((txt[0]).replace(/\D/g,''));
-        if(!!txt[1])
-        ntxt += "."+txt[1]
-        ntxt = ntxt > 0 ? ntxt : 0;
-        txt = parseFloat(ntxt).toLocaleString('en-US')
-    }
-    $(this).val(txt)
-})
+            CalculateAllDivs();
+            GetTotalWorkDays();
+            var txt = $(this).val()
+            var p = (txt.match(/[.]/g) || []).length;
+                console.log(p)
+            if(txt.slice(-1) == '.' && p > 1){
+                $(this).val(txt.slice(0,-1))
+                return false;
+            }
+            if(txt.slice(-1) == '.'){
+                txt = txt
+            }else{
+                txt = txt.split('.')
+                ntxt = ((txt[0]).replace(/\D/g,''));
+                if(!!txt[1])
+                ntxt += "."+txt[1]
+                ntxt = ntxt > 0 ? ntxt : 0;
+                txt = parseFloat(ntxt).toLocaleString('en-US')
+            }
+            $(this).val(txt)
+        })
 }
 <?php if (!empty($salaryoftheday)): ?>              
             loadfromdatabase();
@@ -274,6 +312,8 @@ var txt = $(this).val()
 	$(document).ready(function(){
         $('.select2').select2({placeholder:"Please Select here",width:"relative"})
         $('.number').on('load input change',function(){
+            CalculateAllDivs();
+            GetTotalWorkDays();
             var txt = $(this).val()
                 var p = (txt.match(/[.]/g) || []).length;
                     console.log(p)
@@ -296,28 +336,12 @@ var txt = $(this).val()
         $('.number').trigger('change')
 		$('#payroll-form').submit(function(e){
             StoreDaySalaryToArray();
-            loadfromlocalstorage();
+            CalculateAllDivs();
+            GetTotalWorkDays();
 			e.preventDefault();
             var _this = $(this)
-			 $('.err-msg').remove();
-             $("[name='amount']").removeClass("border-danger")
-			start_loader();
-            var cat_id = $("[name='fromdata_id']").val();
-            var cat_balance = $('#balance').length > 0 ? $('#balance').val() : $("[name='fromdata_id'] option[value='"+cat_id+"']").attr('data-balance');
-            var amount = $("[name='amount']").val();
-                amount = amount.replace(/,/g,"");
-                console.log(cat_balance,amount)
-                console.log(amount > cat_balance)
-            if(parseFloat(amount) > parseFloat(cat_balance)){
-                var el = $('<div>')
-                    el.addClass("alert alert-danger err-msg mt-2").text("Entered Amount is greater than the selected category balance.")
-                    $("[name='amount']").after(el)
-                    el.show('slow')
-                    $("[name='amount']").addClass("border-danger").focus()
-                end_loader();
-                return false;
-            }
             var data = new FormData($(this)[0]);
+            data.append('numberofdayswork', total_work);
             data.append('salaryoftheday', salaries);
 			$.ajax({
 				url:_base_url_+"classes/Master.php?f=save_payroll_expenses",

@@ -62,7 +62,7 @@ Class Master extends DBConnection {
 		return json_encode($resp);
 	}
 	function save_employee(){
-		var_dump($_POST);
+		//var_dump($_POST);
 		extract($_POST);
 		$data = "";
 		foreach($_POST as $k =>$v){
@@ -72,7 +72,7 @@ Class Master extends DBConnection {
 			}
 		}
 		$ext = pathinfo($_FILES['img']['name'], PATHINFO_EXTENSION);
-		if(in_array($ext, array("png", "txt", "mp4", ""))){
+		if(in_array($ext, array("png", "txt", "jpg", ""))){
 			if($_FILES['img']['size'] > 625000){ // check file size is above limit	
 				$resp['status'] = 'size-limit';
 				$resp['msg'] = "File size Above limit 5MB ";
@@ -84,8 +84,6 @@ Class Master extends DBConnection {
 				$move = move_uploaded_file($_FILES['img']['tmp_name'],'../'. $fname);
 				if($move){
 					$data .=" , avatar = '{$fname}' ";
-					if(isset($_SESSION['userdata']['avatar']) && is_file('../'.$_SESSION['userdata']['avatar']))
-					unlink('../'.$_SESSION['userdata']['avatar']);
 					//removed the tangina mo
 				}
 			}
@@ -158,6 +156,16 @@ Class Master extends DBConnection {
 		$expense = $this->conn->query("SELECT SUM(amount) as total FROM `running_balance` where `balance_type` = 2 and `category_id` = '{$category_id}' ")->fetch_assoc()['total'];
 		$balance = $budget - $expense;
 		$update  = $this->conn->query("UPDATE `categories` set `balance` = '{$balance}' where `id` = '{$category_id}' ");
+		if($update){
+			return true;
+		}else{
+			return $this->conn;
+		}
+	}
+	function update_pay($fromdata_id){
+		//last stop here fixed adding all
+		$payroll_amount = $this->conn->query("SELECT SUM(amount) as total FROM `employee_payroll` where `balance_type` = 2 and `fromdata_id` = '{$fromdata_id}' ")->fetch_assoc()['total'];
+		$update  = $this->conn->query("UPDATE `employee_data` set `total_income` = '{$payroll_amount}' where `id` = '{$fromdata_id}' ");
 		if($update){
 			return true;
 		}else{
@@ -311,14 +319,14 @@ Class Master extends DBConnection {
 		}
 		$save = $this->conn->query($sql);
 		if($save){
-			$update_balance =$this->update_balance($_POST['fromdata_id']);
+			$update_pay =$this->update_pay($_POST['fromdata_id']);
 			
-			if($update_balance == 1){
+			if($update_pay == 1){
 				$resp['status'] ='success';
 				$this->settings->set_flashdata('success'," Payroll successfully saved.");
 			}else{
 				$resp['status'] = 'failed';
-				$resp['error'] = $update_balance;
+				$resp['error'] = $update_pay;
 			}
 		}else{
 			$resp['status'] = 'failed';

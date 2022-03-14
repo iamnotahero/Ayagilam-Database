@@ -51,8 +51,6 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 			<div class="form-group">
 				<label for="date_start" class="control-label">Date Start</label>
 				<input id="date_start" type="date" class="form-control form-control-sm" name="date_start" value="<?php echo isset($date_start) ? $date_start : date('Y-m-d', time());  ?>">
-				<script>
-				</script>
                 </select>
 			</div>
 			<div class="form-group">
@@ -62,8 +60,6 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 			<div class="form-group">
 				<label for="expiration" class="control-label">Expiration</label>
 				<input type="date" class="form-control form-control-sm" name="expiration" value="<?php echo isset($expiration) ? $expiration : date('Y-m-d', time());  ?>">
-				<script>
-				</script>
                 </select>
 			</div>
 			<div class="form-group">
@@ -72,9 +68,9 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 			</div>
 			</div<>
 			<div class="form-group">
-				<label for="company_list" class="control-label">Add Company</label>
+				<label for="company_list" class="control-label">Company</label>
 				<select name="company_list" selected="0" id="company_list" class="custom-select select2" required>
-				<option value="0"></option>
+				<option value="" disabled selected>Select Company Here</option>
 				<option value="1">James Hardie</option>
 				<option value="2">Huawei</option>
 				<option value="3">LBC</option>

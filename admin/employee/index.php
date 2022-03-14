@@ -37,7 +37,7 @@
 					<?php 
 					$i = 1;
 					//removed data type on WHERE statement
-						$qry = $conn->query("SELECT r.*,c.fullname,c.employee_id,c.balance from `employee_balance` r inner join `employee_data` c on r.person_id = c.id where c.status= 1 order by unix_timestamp(r.date_created) desc");
+						$qry = $conn->query("SELECT r.*,c.fullname,c.employee_id,c.total_income from `employee_balance` r inner join `employee_data` c on r.person_id = c.id where c.status= 1 order by unix_timestamp(r.date_created) desc");
 						while($row = $qry->fetch_assoc()):
 							foreach($row as $k=> $v){
 								$row[$k] = trim(stripslashes($v));
