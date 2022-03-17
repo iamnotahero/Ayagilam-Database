@@ -79,6 +79,7 @@ Class Users extends DBConnection {
 			return false;
 		}
 	}
+	/*
 	public function save_fusers(){
 		extract($_POST);
 		$data = "";
@@ -121,7 +122,8 @@ Class Users extends DBConnection {
 			}
 
 	} 
-
+	*/
+	/*
 	public function save_susers(){
 		extract($_POST);
 		$data = "";
@@ -164,7 +166,7 @@ Class Users extends DBConnection {
 			}
 
 	} 
-	
+	*/
 }
 
 $users = new users();

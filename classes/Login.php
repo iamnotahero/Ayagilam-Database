@@ -17,7 +17,7 @@ class Login extends DBConnection {
 	}
 	public function login(){
 		extract($_POST);
-
+		$timestamp = date('Y-m-d H:i:s');
 		$qry = $this->conn->query("SELECT * from users where username = '$username' and password = md5('$password') ");
 		if($qry->num_rows > 0){
 			foreach($qry->fetch_array() as $k => $v){
@@ -27,6 +27,7 @@ class Login extends DBConnection {
 
 			}
 			$this->settings->set_userdata('login_type',1);
+		$this->conn->query("UPDATE users set last_login = '$timestamp' where username = '$username' ");
 		return json_encode(array('status'=>'success'));
 		}else{
 		return json_encode(array('status'=>'incorrect','last_qry'=>"SELECT * from users where username = '$username' and password = md5('$password') "));
