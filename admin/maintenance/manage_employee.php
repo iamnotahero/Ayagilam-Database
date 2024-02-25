@@ -19,9 +19,9 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 			<div class="form-group d-flex justify-content-center">
 				<!--PUT CONDITION IF WHILE NO PICTURE *FIXED* I THINK COMEBACK TO THIS LATER IF NOT--> 	
 				<?php if (!isset($avatar) or $avatar == "N/A"): ?>
-								<span><img src="/AyagilamDatabase/uploads/default.png" alt=" " id="cimg" class="img-fluid img-thumbnail temp-blur-img"></span>
+								<span><img src="/AyagilamDatabase/uploads/default.png" alt=" " id="cimg" class="img-fluid img-thumbnail "></span>
 								<?php else: ?>	
-					<img src="<?php echo validate_image(isset($avatar) ? $avatar :'') ?>" alt="	" id="cimg" class="img-fluid img-thumbnail temp-blur-img">
+					<img src="<?php echo validate_image(isset($avatar) ? $avatar :'') ?>" alt="	" id="cimg" class="img-fluid img-thumbnail ">
 					<?php endif; ?>	
 				</div>
 			<div class="form-group">
@@ -216,8 +216,8 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 </div>
 <style>
 	img#cimg{
-		filter: blur(8px);
-    	-webkit-filter: blur(8px);
+		/*filter: blur(8px);*/
+    	/*-webkit-filter: blur(8px);*/
 		height: 15vh;
 		width: 15vh;
 		object-fit: cover;

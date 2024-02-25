@@ -22,7 +22,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
             $qry = $conn->query("SELECT * FROM `employee_data` where `status` = 1 order by id asc");
             while($row= $qry->fetch_assoc()):
         ?>
-        <option value="<?php echo $row['id'] ?>" <?php echo isset($fromdata_id) && $fromdata_id == $row['id'] ? 'selected' : '' ?> data-balance="<?php echo $row['total_income'] ?>"><?php echo $row['employee_id']." [".($row['fullname'])."]" ?></option>
+        <option value="<?php echo $row['id'] ?>" <?php echo isset($fromdata_id) && $fromdata_id == $row['id'] ? 'selected' : '' ?> data-balance="<?php echo $row['balance'] ?>"><?php echo $row['employee_id']." [".($row['fullname'])."]" ?></option>
         <?php endwhile; ?>
         </select>
     </div>
@@ -33,7 +33,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
             <?php
             $qry = $conn->query("SELECT * FROM `employee_data` where id = '{$fromdata_id}'");
             $cat_res = $qry->fetch_assoc();
-            $balance = $cat_res['total_income']
+            $balance = $cat_res['balance']
             ?>
             <p><b><?php echo $cat_res['employee_id'] ?> [<?php echo number_format($balance) ?>]</b></p>
             <input type="hidden" id="balance" value="<?php echo $balance ?>">

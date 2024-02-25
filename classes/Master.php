@@ -125,6 +125,71 @@ Class Master extends DBConnection {
 		}
 		return json_encode($resp);
 	}
+	function save_truck(){
+		//var_dump($_POST); THIS BUGS OUT THE POST PRCOCESS
+		extract($_POST);
+		$data = "";
+		foreach($_POST as $k =>$v){
+			if(!in_array($k,array('id'))){ //test remove description
+				if(!empty($data)) $data .=",";
+				$data .= " `{$k}`='{$v}' ";
+			}
+		}
+		$ext = pathinfo($_FILES['img']['name'], PATHINFO_EXTENSION);
+		if(in_array($ext, array("png", "txt", "jpg", ""))){
+			if($_FILES['img']['size'] > 625000){ // check file size is above limit	
+				$resp['status'] = 'size-limit';
+				$resp['msg'] = "File size Above limit 5MB ";
+				return json_encode($resp);
+				exit;
+   			}
+			if(isset($_FILES['img']) && $_FILES['img']['tmp_name'] != ''){
+				$fname = 'uploads/'.strtotime(date('y-m-d H:i')).'_'.$_FILES['img']['name'];
+				$move = move_uploaded_file($_FILES['img']['tmp_name'],'../'. $fname);
+				if($move){
+					$data .=" , avatar = '{$fname}' ";
+					//removed the tangina mo
+				}
+			}
+		}else{
+				$resp['status'] = 'wrong-extension';
+				$resp['msg'] = "File not supported.";
+				return json_encode($resp);
+				exit;
+		}
+		 /*if(isset($_POST['description'])){
+			if(!empty($data)) $data .=",";
+				$data .= " `description`='".addslashes(htmlentities($description))."' "; // redudant code
+		}]
+		*/
+		$check = $this->conn->query("SELECT * FROM `truck_data` where `plate_number` = '{$plate_number}' ".(!empty($id) ? " and id != {$id} " : "")." ")->num_rows;
+		if($this->capture_err())
+			return $this->capture_err();
+		if($check > 0){
+			$resp['status'] = 'failed';
+			$resp['msg'] = "Plate Number already exist.";
+			return json_encode($resp);
+			exit;
+		}
+		if(empty($id)){
+			$sql = "INSERT INTO `truck_data` set {$data} ";
+			$save = $this->conn->query($sql);
+		}else{
+			$sql = "UPDATE `truck_data` set {$data} where id = '{$id}' ";
+			$save = $this->conn->query($sql);
+		}
+		if($save){
+			$resp['status'] = 'success';
+			if(empty($id))
+				$this->settings->set_flashdata('success',"New Employee successfully saved.");
+			else
+				$this->settings->set_flashdata('success',"Employee successfully updated.");
+		}else{
+			$resp['status'] = 'failed';
+			$resp['err'] = $this->conn->error."[{$sql}]";
+		}
+		return json_encode($resp);
+	}
 	function delete_category(){
 		extract($_POST);
 		$del = $this->conn->query("DELETE FROM `categories` where id = '{$id}'");
@@ -151,6 +216,19 @@ Class Master extends DBConnection {
 		return json_encode($resp);
 
 	}
+	function delete_truck_data(){
+		extract($_POST);
+		$del = $this->conn->query("DELETE FROM `truck_data` where id = '{$id}'");
+		if($del){
+			$resp['status'] = 'success';
+			$this->settings->set_flashdata('success',"Truck Data successfully deleted.");
+		}else{
+			$resp['status'] = 'failed';
+			$resp['error'] = $this->conn->error;
+		}
+		return json_encode($resp);
+
+	}
 	function update_balance($category_id){
 		$budget = $this->conn->query("SELECT SUM(amount) as total FROM `running_balance` where `balance_type` = 1 and `category_id` = '{$category_id}' ")->fetch_assoc()['total'];
 		$expense = $this->conn->query("SELECT SUM(amount) as total FROM `running_balance` where `balance_type` = 2 and `category_id` = '{$category_id}' ")->fetch_assoc()['total'];
@@ -165,7 +243,7 @@ Class Master extends DBConnection {
 	function update_pay($fromdata_id){
 		//last stop here fixed adding all
 		$payroll_amount = $this->conn->query("SELECT SUM(amount) as total FROM `employee_payroll` where `balance_type` = 2 and `fromdata_id` = '{$fromdata_id}' ")->fetch_assoc()['total'];
-		$update  = $this->conn->query("UPDATE `employee_data` set `total_income` = '{$payroll_amount}' where `id` = '{$fromdata_id}' ");
+		$update  = $this->conn->query("UPDATE `employee_data` set `balance` = '{$payroll_amount}' where `id` = '{$fromdata_id}' ");
 		if($update){
 			return true;
 		}else{
@@ -425,6 +503,9 @@ switch ($action) {
 	case 'save_employee':
 		echo $Master->save_employee();
 	break;
+	case 'save_truck':
+		echo $Master->save_truck();
+	break;
 	case 'save_employee_expenses':
 		echo $Master->save_employee_expenses();
 	break;
@@ -442,6 +523,9 @@ switch ($action) {
 	break;
 	case 'delete_expense':
 		echo $Master->delete_expense();
+	break;
+	case 'delete_truck_data':
+		echo $Master->delete_truck_data();
 	break;
 	default:
 		// echo $sysset->index();

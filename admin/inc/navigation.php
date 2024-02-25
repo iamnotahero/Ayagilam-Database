@@ -44,6 +44,14 @@
                       </a>
                     </li>
                     <li class="nav-item dropdown">
+                      <a href="<?php echo base_url ?>admin/?page=truck" class="nav-link nav-truck">
+                        <i class="nav-icon fas fa-money-bill-wave"></i>
+                        <p>
+                          Truck Management
+                        </p>
+                      </a>
+                    </li>
+                    <li class="nav-item dropdown">
                       <a href="<?php echo base_url ?>admin/?page=payroll" class="nav-link nav-e nav-payroll">
                         <i class="nav-icon fas fa-wallet"></i>
                         <p>
