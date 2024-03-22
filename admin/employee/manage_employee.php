@@ -12,21 +12,28 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 <div class="conteiner-fluid">
 <form action="" id="employee-form">
     <input type="hidden" name ="id" value="<?php echo isset($id) ? $id : '' ?>">
-    <input type="hidden" name ="balance_type" value="2"><!-- STATIC VARIABLE OF BALANCE TYPE!-->
+    <!--    <input type="hidden" name ="balance_type" value="2">STATIC VARIABLE OF BALANCE TYPE!-->
     <?php if(!isset($id)): ?>
     <div class="form-group">
         <label for="person_id" class="control-label">Employee ID</label>
         <select name="person_id" id="person_id" class="custom-select select2" required>
         <option value=""></option>
         <?php
-            $qry = $conn->query("SELECT * FROM `employee_data` where `balance` > 0 order by employee_id asc");
+            $qry = $conn->query("SELECT * FROM `employee_data` order by employee_id asc");
             while($row= $qry->fetch_assoc()):
         ?>
         <!--ADD FULL NAME!-->
-        <option value="<?php echo $row['id'] ?>" <?php echo isset($person_id) && $person_id == $row['id'] ? 'selected' : '' ?> data-balance="<?php echo $row['balance'] ?>"><?php echo $row['employee_id']." [".number_format($row['balance'])."]" ?></option>
+        <option value="<?php echo $row['id'] ?>" <?php echo isset($person_id) && $person_id == $row['id'] ? 'selected' : '' ?> data-balance="<?php echo $row['balance'] ?>"><?php echo $row['employee_id'] ?> - <?php echo $row['fullname']." [".number_format($row['balance'])."]" ?></option>
         <?php endwhile; ?>
         </select>
     </div>
+    <div class="form-group">
+				<label for="balance_type" class="control-label">Budget or Expense</label>
+                <select name="balance_type" id="balance_type" class="custom-select selevt">
+                <option value="1" <?php echo isset($balance_type) && $balance_type == 1 ? 'selected' : '' ?>>Budget</option>
+                <option value="2" <?php echo isset($balance_type) && $balance_type == 2 ? 'selected' : '' ?>>Expense</option>
+                </select>
+	</div>
     <?php else: ?>
         <div class="form-group">
             <label for="person_id" class="control-label">Employee ID</label>
@@ -37,9 +44,20 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
             $balance = $cat_res['balance'] +$amount;
             ?>
             <p><b><?php echo $cat_res['employee_id'] ?> "<?php echo $cat_res['fullname'] ?>"[<?php echo number_format($balance) ?>]</b></p>
+
             <input type="hidden" id="balance" value="<?php echo $balance ?>">
             <input type="hidden" id="fullname" value="<?php echo $fullname ?>">
         </div>
+
+    <div class="form-group text-center">
+    <td class="text-center">
+                                <?php if($balance_type == 1): ?>
+                                    <span class="badge badge-success">Budget</span>
+                                <?php else: ?>
+                                    <span class="badge badge-danger">Expense</span>
+                                <?php endif; ?>
+             </td>
+    </div>            	
     <?php endif; ?>
     <div class="form-group">
         <label for="amount" class="control-label">Amount</label>
@@ -82,6 +100,8 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 			 $('.err-msg').remove();
              $("[name='amount']").removeClass("border-danger")
 			start_loader();
+            var cat_type = $("[name='balance_type']").val();
+           if(cat_type == 2){
             var cat_id = $("[name='person_id']").val();
             var cat_balance = $('#balance').length > 0 ? $('#balance').val() : $("[name='person_id'] option[value='"+cat_id+"']").attr('data-balance');
             var amount = $("[name='amount']").val();
@@ -90,13 +110,14 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                 console.log(amount > cat_balance)
             if(parseFloat(amount) > parseFloat(cat_balance)){
                 var el = $('<div>')
-                    el.addClass("alert alert-danger err-msg mt-2").text("Entered Amount is greater than the selected category balance.")
+                    el.addClass("alert alert-danger err-msg mt-2").text("Entered Amount is greater than the Employee Budget.")
                     $("[name='amount']").after(el)
                     el.show('slow')
                     $("[name='amount']").addClass("border-danger").focus()
                 end_loader();
                 return false;
             }
+          }
 			$.ajax({
 				url:_base_url_+"classes/Master.php?f=save_employee_expenses",
 				data: new FormData($(this)[0]),

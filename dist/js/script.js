@@ -28,17 +28,16 @@ $(document).ready(function(){
 		if($('.err_msg').length > 0)
 			$('.err_msg').remove()
 		$.ajax({
-			url:_base_url_+'classes/Login.php?f=login',
+			url:_base_url_+'classes/Login.php?f=login_admin',
 			method:'POST',
 			data:$(this).serialize(),
 			error:err=>{
 				console.log(err)
-
 			},
 			success:function(resp){
 				if(resp){
 					resp = JSON.parse(resp)
-					if(resp.status == 'success'){
+					if(resp.status == 'success_admin'){
 						location.replace(_base_url_+'admin');
 					}else if(resp.status == 'incorrect'){
 						var _frm = $('#login-frm')
@@ -59,7 +58,7 @@ $(document).ready(function(){
 		if($('.err_msg').length > 0)
 			$('.err_msg').remove()
 		$.ajax({
-			url:_base_url_+'classes/Login.php?f=flogin',
+			url:_base_url_+'classes/Login.php?f=login_employee',
 			method:'POST',
 			data:$(this).serialize(),
 			error:err=>{
@@ -69,8 +68,8 @@ $(document).ready(function(){
 			success:function(resp){
 				if(resp){
 					resp = JSON.parse(resp)
-					if(resp.status == 'success'){
-						location.replace(_base_url_+'faculty');
+					if(resp.status == 'success_employee'){
+						location.replace(_base_url_+'employee');
 					}else if(resp.status == 'incorrect'){
 						var _frm = $('#flogin-frm')
 						var _msg = "<div class='alert alert-danger text-white err_msg'><i class='fa fa-exclamation-triangle'></i> Incorrect username or password</div>"

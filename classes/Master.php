@@ -190,6 +190,204 @@ Class Master extends DBConnection {
 		}
 		return json_encode($resp);
 	}
+	function save_job(){
+		extract($_POST);
+		$data = "";
+		foreach($_POST as $k =>$v){
+			if(!in_array($k,array('id'))){
+				if(!empty($data)) $data .=",";
+				$data .= " `{$k}`='{$v}' ";
+			}
+		}
+		$check = $this->conn->query("SELECT * FROM `jobs` where `jobdoer` = '{$jobdoer}' ".(!empty($id) ? " and id != {$id} " : "")." and status != 2")->num_rows;
+		if($this->capture_err())
+			return $this->capture_err();
+		if($check > 0){
+			$resp['status'] = 'failed';
+			$resp['msg'] = "Employee already has an assigned job.";
+			return json_encode($resp);
+			exit;
+		}
+		if(empty($id)){
+			$sql = "INSERT INTO `jobs` set {$data} ";
+			$save = $this->conn->query($sql);
+		}else{
+			$sql = "UPDATE `jobs` set {$data} where id = '{$id}' ";
+			$save = $this->conn->query($sql);
+		}
+		if($save){
+			$resp['status'] = 'success';
+			if(empty($id))
+				$this->settings->set_flashdata('success',"New Job successfully saved.");
+			else
+				$this->settings->set_flashdata('success',"Job successfully updated.");
+		}else{
+			$resp['status'] = 'failed';
+			$resp['err'] = $this->conn->error."[{$sql}]";
+		}
+		return json_encode($resp);
+	}
+	function save_leaves(){
+		//var_dump($_POST);
+		extract($_POST);
+		$data = "";
+		foreach($_POST as $k =>$v){
+			if(!in_array($k,array('id','reason'))){
+				if(!empty($data)) $data .=",";
+				$data .= " `{$k}`='{$v}' ";
+			}
+		}
+
+		if(isset($_POST['reason'])){
+			if(!empty($data)) $data .=",";
+				$data .= " `reason`='".addslashes(htmlentities($reason))."' ";
+		}
+		/*
+			$check = $this->conn->query("SELECT * FROM `employee_data` where `employee_id` = '{$employee_id}' ".(!empty($id) ? " and id != {$id} " : "")." ")->num_rows;
+			if($this->capture_err())
+				return $this->capture_err();
+			if($check > 0){
+				$resp['status'] = 'failed';
+				$resp['msg'] = "Employee ID already exist.";
+				return json_encode($resp);
+				exit;
+			}
+		*/ //no need to check if there's an exisiting leave.
+		/*
+			if(empty($id)){
+				$sql = "INSERT INTO `employee_data` set {$data} ";
+				$save = $this->conn->query($sql);
+			}else{
+				$sql = "UPDATE `employee_data` set {$data} where id = '{$id}' ";
+				$save = $this->conn->query($sql);
+			}
+		*/ // no need to also check if the sending does not have an ID. maybe it does need .. put the function of the conditon.
+		$sql = "INSERT INTO `leaves` set {$data} ";
+		$save = $this->conn->query($sql);
+		if($save){
+			$resp['status'] = 'success';
+			if(empty($id))
+				$this->settings->set_flashdata('success',"You have successfully filed a leave. Please wait for a few days to check.");
+			else
+				$this->settings->set_flashdata('success',"This will popup if there's no id found in the userdata session.");
+		}else{
+			$resp['status'] = 'failed';
+			$resp['err'] = $this->conn->error."[{$sql}]";
+		}
+		return json_encode($resp);
+	}
+	function clock_in(){
+	    extract($_POST);
+	    $data = "";
+	    foreach($_POST as $k =>$v){
+	        if(!in_array($k,array('id'))){
+	            if(!empty($data)) $data .=",";
+	            $data .= " `{$k}`='{$v}' ";
+	        }
+	    }
+	    $date = date('Y-m-d');
+	    $clockin_time = date('Y-m-d H:i:s');
+	    $check = "SELECT * FROM employee_time_logs where Tdate='$date' and employee_id='$id'";
+	    $clock = $this->conn->query($check);
+	    if($clock->num_rows>0){
+	        $resp['status'] = 'failed';
+	        $resp['msg'] = "Already Clock In";
+	        return json_encode($resp);
+	        exit();
+	    }
+	    else{
+	        $clockin = "INSERT INTO employee_time_logs (employee_id, time_in, Tdate) VALUES ('$id', '$clockin_time','$date')";
+	        $insert =$this->conn->query($clockin);
+
+	        if($insert){
+	            $resp['status'] = 'success';
+	            $this->settings->set_flashdata('success',"Clock In Succesful");
+	        }
+	        else{
+	            $resp['status'] = 'failed';
+	            $resp['err'] = $this->conn->error."[{$insert}]";
+	        }
+
+	    }
+	return json_encode($resp);
+	}
+	function clock_out(){
+	    extract($_POST);
+	    $data = "";
+	    foreach($_POST as $k =>$v){
+	        if(!in_array($k,array('id'))){
+	            if(!empty($data)) $data .=",";
+	            $data .= " `{$k}`='{$v}' ";
+	        }
+	    }
+	    $date = date('Y-m-d');
+	    $clockout_time = date('Y-m-d H:i:s');
+	    $check = "SELECT * FROM employee_time_logs where Tdate='$date' and employee_id='$id' and time_out is not null";
+	    $clock = $this->conn->query($check);
+	    if($clock->num_rows>0){
+	        $resp['status'] = 'failed';
+	        $resp['msg'] = "Already Clock Out";
+	        return json_encode($resp);
+	        exit();
+	    }
+	    else{
+	        $clockout = "UPDATE employee_time_logs set time_out ='$clockout_time' where Tdate='$date' and employee_id='$id' ";
+	        $insert =$this->conn->query($clockout);
+
+	        if($insert){
+	            $resp['status'] = 'success';
+	            $this->settings->set_flashdata('success',"Clock Out Succesful");
+	        }
+	        else{
+	            $resp['status'] = 'failed';
+	            $resp['err'] = $this->conn->error."[{$insert}]";
+	        }
+
+	    }
+	return json_encode($resp);
+	}
+	function update_status(){
+		extract($_POST);
+	    $data = "";
+	    foreach($_POST as $k =>$v){
+	        if(!in_array($k,array('id'))){
+	            if(!empty($data)) $data .=",";
+	            $data .= " `{$k}`='{$v}' ";
+	        }
+	    }
+
+	    $update = $this->conn->query("UPDATE jobs set status =1 where id='$jobID'");
+	    if($update){
+	    	$resp['status']='success';
+	    	$this->settings->set_flashdata('success',"Job Accepted");
+	    }
+	    else{
+	    	$resp['status']='failed';
+	    	$resp['err']=$this->conn->error."[{$update}]";
+	    }
+	    return json_encode($resp);
+	}
+	function delivered(){
+		extract($_POST);
+	    $data = "";
+	    foreach($_POST as $k =>$v){
+	        if(!in_array($k,array('id'))){
+	            if(!empty($data)) $data .=",";
+	            $data .= " `{$k}`='{$v}' ";
+	        }
+	    }
+
+	    $update = $this->conn->query("UPDATE jobs set status =2 where id='$jobID'");
+	    if($update){
+	    	$resp['status']='success';
+	    	$this->settings->set_flashdata('success',"Delivered");
+	    }
+	    else{
+	    	$resp['status']='failed';
+	    	$resp['err']=$this->conn->error."[{$update}]";
+	    }
+	    return json_encode($resp);
+	}
 	function delete_category(){
 		extract($_POST);
 		$del = $this->conn->query("DELETE FROM `categories` where id = '{$id}'");
@@ -216,6 +414,24 @@ Class Master extends DBConnection {
 		return json_encode($resp);
 
 	}
+	function delete_employee_expense(){
+		extract($_POST);
+		$del = $this->conn->query("DELETE FROM `employee_balance` where id = '{$id}'");
+		if($del){
+			$update_balance =$this->update_balance($person_id);
+			if($update_balance == 1){
+				$resp['status'] ='success';
+				$this->settings->set_flashdata('success',"Expense successfully deleted.");
+			}else{
+				$resp['status'] = 'failed';
+				$resp['error'] = $update_balance;
+			}
+		}else{
+			$resp['status'] = 'failed';
+			$resp['error'] = $this->conn->error;
+		}
+		return json_encode($resp);
+	}
 	function delete_truck_data(){
 		extract($_POST);
 		$del = $this->conn->query("DELETE FROM `truck_data` where id = '{$id}'");
@@ -229,11 +445,61 @@ Class Master extends DBConnection {
 		return json_encode($resp);
 
 	}
+	function delete_job(){
+		extract($_POST);
+		$del = $this->conn->query("DELETE FROM `jobs` where id = '{$id}'");
+		if($del){
+			$resp['status'] = 'success';
+			$this->settings->set_flashdata('success',"Truck Data successfully deleted.");
+		}else{
+			$resp['status'] = 'failed';
+			$resp['error'] = $this->conn->error;
+		}
+		return json_encode($resp);
+
+	}
+	function reject(){
+		extract($_POST);
+		$update = $this->conn->query("UPDATE `leaves` set status = 1 where id='{$id}'");
+		if($update){
+			$resp['status']='success';
+			$this->settings->set_flashdata('success',"Rejected.");
+		}
+		else{
+			$resp['status']='failed';
+			$resp['error']=$this->conn->error;
+		}
+		return json_encode($resp);
+	}
+	function accept(){
+		extract($_POST);
+		$update = $this->conn->query("UPDATE `leaves` set status = 2 where id='{$id}'");
+		if($update){
+			$resp['status']='success';
+			$this->settings->set_flashdata('success',"Accepted.");
+		}
+		else{
+			$resp['status']='failed';
+			$resp['error']=$this->conn->error;
+		}
+		return json_encode($resp);
+	}
 	function update_balance($category_id){
 		$budget = $this->conn->query("SELECT SUM(amount) as total FROM `running_balance` where `balance_type` = 1 and `category_id` = '{$category_id}' ")->fetch_assoc()['total'];
 		$expense = $this->conn->query("SELECT SUM(amount) as total FROM `running_balance` where `balance_type` = 2 and `category_id` = '{$category_id}' ")->fetch_assoc()['total'];
 		$balance = $budget - $expense;
 		$update  = $this->conn->query("UPDATE `categories` set `balance` = '{$balance}' where `id` = '{$category_id}' ");
+		if($update){
+			return true;
+		}else{
+			return $this->conn;
+		}
+	}
+	function update_balance_employee($person_id){
+		$budget = $this->conn->query("SELECT SUM(amount) as total FROM `employee_balance` where `balance_type` = 1 and `person_id` = '{$person_id}' ")->fetch_assoc()['total'];
+		$expense = $this->conn->query("SELECT SUM(amount) as total FROM `employee_balance` where `balance_type` = 2 and `person_id` = '{$person_id}' ")->fetch_assoc()['total'];
+		$balance = $budget - $expense;
+		$update  = $this->conn->query("UPDATE `employee_data` set `balance` = '{$balance}' where `id` = '{$person_id}' ");
 		if($update){
 			return true;
 		}else{
@@ -432,7 +698,7 @@ Class Master extends DBConnection {
 		}
 		$save = $this->conn->query($sql);
 		if($save){
-			$update_balance =$this->update_balance($_POST['person_id']);
+			$update_balance =$this->update_balance_employee($_POST['person_id']);
 			
 			if($update_balance == 1){
 				$resp['status'] ='success';
@@ -526,6 +792,36 @@ switch ($action) {
 	break;
 	case 'delete_truck_data':
 		echo $Master->delete_truck_data();
+	break;
+	case 'save_job':
+		echo $Master->save_job();
+	break;
+	case 'delete_job':
+		echo $Master->delete_job();
+	break;
+	case 'save_leaves':
+		echo $Master->save_leaves();
+	break;
+	case 'clock_in':
+		echo $Master->clock_in();
+	break;
+	case 'clock_out':
+		echo $Master->clock_out();
+	break;
+	case 'update_status':
+		echo $Master->update_status();
+	break;
+	case 'delivered':
+		echo $Master->delivered();
+	break;
+	case 'delete_employee_expense':
+		echo $Master->delete_employee_expense();
+	break;
+	case 'reject':
+		echo $Master->reject();
+	break;
+	case 'accept':
+		echo $Master->accept();
 	break;
 	default:
 		// echo $sysset->index();

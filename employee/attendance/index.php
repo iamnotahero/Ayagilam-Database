@@ -13,23 +13,35 @@
 			<table class="table table-bordered table-stripped">
 				<colgroup>
 					<col width="5%">
-					<col width="15%">
-					<col width="20%">
-					<col width="15%">
 					<col width="30%">
-					<col width="15%">
+					<col width="30%">
+					<col width="30%">
 				</colgroup>
 				<thead>
 					<tr>
 						<th>#</th>
-						<th>Day</th>
-						<th>Month</th>
-						<th>Year</th>
+						<th>Date</th>
 						<th>In</th>
 						<th>Out</th>
 					</tr>
 				</thead>
+				<input type="hidden" name ="id" value="<?php $id = $_settings->userdata('id'); ?>">
 				<tbody>
+					<?php $i=1;
+						$qry = $conn->query("SELECT * from `employee_time_logs` where `employee_id` = '$id'  order by time_in asc "); //the status query... i might remove in the futer
+						while($row = $qry->fetch_assoc()):
+							foreach($row as $k=> $v){
+								$row[$k] = trim(stripslashes($v));
+							}
+					 ?>
+					 <tr>
+					 	<td><?php echo $i++ ?></td>
+					 	<td><?php echo $row['Tdate']; ?></td>
+					 	<td><?php echo $row['time_in']; ?></td>
+					 	<td><?php echo $row['time_out']; ?></td>
+					 </tr>
+					 <?php endwhile; ?>
+				</tbody>
 			</table>
 		</div>
 		</div>

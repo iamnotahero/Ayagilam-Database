@@ -1,7 +1,9 @@
 <?php require_once('../config.php') ?>
 <!DOCTYPE html>
 <html lang="en" class="" style="height: auto;">
-<?php require_once('inc/header.php') ?>
+<?php require_once('inc/header.php');
+?>
+
 
 <body class="hold-transition login-page bg-navy">
     <script>
@@ -14,27 +16,22 @@
             <div class="card-body">
                 <p class="login-box-msg text-dark">Sign in to start your session</p>
 
-                <form id="login-frm" action="" method="post">
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" name="username" placeholder="Username" autofocus>
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-user"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" name="password" placeholder="Password">
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-lock"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row justify-conten-center">
+                <form id="flogin-frm" action="" method="post"> <div
+                class="input-group mb-3"> <input type="text"
+                class="form-control" name="username" placeholder="Username"
+                autofocus> <div class="input-group-append"> <div
+                class="input-group-text"> <span class="fas fa-user"></span>
+                </div> </div> </div> <div class="input-group mb-3"> <input
+                type="text" class="form-control" name="password"
+                placeholder="Password"> <div class="input-group-append"> <div
+                class="input-group-text"> <span class="fas fa-lock"></span>
+                </div> </div> </div> <div class="row justify-conten-center">
                         <!-- /.col -->
-                        <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                        <button type="submit" class="btn btn-primary btn-block" name ="empLogin">Sign In</button>
                         <!-- /.col -->
+                    </div>
+                    <div style="width: 350px; margin-top: 10px; margin-left: 95px;">
+                        <a href="../admin/login.php" style="width: 80%;">Admin? Click Here!</a>
                     </div>
                 </form>
                 <!-- /.social-auth-links -->

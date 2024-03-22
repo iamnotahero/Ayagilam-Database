@@ -24,7 +24,7 @@
                         </div>
                     </div>
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" name="password" placeholder="Password">
+                        <input type="password" class="form-control" name="password" placeholder="Password">
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -35,6 +35,9 @@
                         <!-- /.col -->
                         <button type="submit" class="btn btn-primary btn-block">Sign In</button>
                         <!-- /.col -->
+                    </div>
+                    <div style="width: 350px; margin-top: 10px; margin-left: 80px;">
+                        <a href="../employee/login_employee.php" style="width: 80%;">Employee? Click Here!</a>
                     </div>
                 </form>
                 <!-- /.social-auth-links -->

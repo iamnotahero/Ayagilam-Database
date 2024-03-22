@@ -34,8 +34,24 @@
                           Dashboard
                         </p>
                       </a>
-                    </li> 
+                    </li>
                     <li class="nav-item dropdown">
+                      <a href="<?php echo base_url ?>admin/?page=addjob" class="nav-link nav-e nav-addjob">
+                        <i class="nav-icon fas fa-wallet"></i>
+                        <p>
+                          Add Job
+                        </p>
+                      </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                      <a href="<?php echo base_url ?>admin/?page=jobhist" class="nav-link nav-e nav-jobhist">
+                        <i class="nav-icon fas fa-wallet"></i>
+                        <p>
+                          Job History
+                        </p>
+                      </a>
+                    </li>
+                     <li class="nav-item dropdown">
                       <a href="<?php echo base_url ?>admin/?page=employee" class="nav-link nav-e nav-employee">
                         <i class="nav-icon fas fa-wallet"></i>
                         <p>
@@ -93,6 +109,14 @@
                       </a>
                     </li>
                     <li class="nav-header">Maintenance</li>
+                    <li class="nav-item dropdown">
+                      <a href="<?php echo base_url ?>admin/?page=maintenance/employeeleaves" class="nav-link nav-maintenance/employee">
+                        <i class="nav-icon fas fa-th-list"></i>
+                        <p>
+                          Employee Leaves
+                        </p>
+                      </a>
+                    </li>
                     <li class="nav-item dropdown">
                       <a href="<?php echo base_url ?>admin/?page=maintenance/employee" class="nav-link nav-maintenance/employee">
                         <i class="nav-icon fas fa-th-list"></i>

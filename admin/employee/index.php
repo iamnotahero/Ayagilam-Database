@@ -29,6 +29,7 @@
 						<th>Employee ID</th>
 						<th>Name</th>
 						<th>Amount</th>
+						<th>Type</th>
 						<th>Remarks</th>
 						<th>Action</th>
 					</tr>
@@ -50,6 +51,15 @@
 							<td><?php echo $row['employee_id'] ?></td>
 							<td><?php echo $row['fullname'] ?></td>
 							<td ><p class="m-0 text-right"><?php echo number_format($row['amount']) ?></p></td>
+							<td class="text-center">
+                                <?php if($row['balance_type'] == 1): ?>
+                                    <span class="badge badge-success">Budget</span>
+                                <?php elseif($row['balance_type'] == 2): ?>
+                                    <span class="badge badge-danger">Expense</span>
+								<?php else: ?>
+									<span class="badge badge-danger">Unknown</span>
+                                <?php endif; ?>
+                            </td>
 							<td ><p class="m-0 truncate"><?php echo ($row['remarks']) ?></p></td>
 							<td align="center">
 								 <button type="button" class="btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
@@ -79,7 +89,7 @@
 			uni_modal("<i class='fa fa-edit'></i> Update Expense",'employee/manage_employee.php?id='+$(this).attr('data-id'))
 		})
 		$('.delete_data').click(function(){
-			_conf("Are you sure to delete this expense permanently?","delete_expense",[$(this).attr('data-id'),$(this).attr('data-person_id')])
+			_conf("Are you sure to delete this expense permanently?","delete_employee_expense",[$(this).attr('data-id'),$(this).attr('data-person_id')])
 		})
 		$('#uni_modal').on('show.bs.modal',function(){
 			$('.summernote').summernote({
@@ -99,10 +109,10 @@
 			order: [[0, 'asc']]
 		});
 	})
-	function delete_expense($id,$person_id){
+	function delete_employee_expense($id,$person_id){
 		start_loader();
 		$.ajax({
-			url:_base_url_+"classes/Master.php?f=delete_expense",
+			url:_base_url_+"classes/Master.php?f=delete_employee_expense",
 			method:"POST",
 			data:{id: $id,person_id: $person_id},
 			dataType:"json",
